@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plant Care Tips — Sri Venkateswara Nursery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <main id="root"></main>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    renderLayout("blog");
+    const root = document.getElementById("root");
+    const post = POSTS.find((p) => p.id === Number(qs("id")));
+
+    if (post) {
+      document.title = `${post.title} — Sri Venkateswara Nursery`;
+      const related = PRODUCTS.filter((p) => p.cat === ({ Flowering: "flowering", Seeds: "seeds", Saplings: "saplings" }[post.cat] || "flowering")).slice(0, 4);
+      root.innerHTML = `<section class="section" style="padding-top:32px"><div class="container"><article class="article">
+        <div class="crumbs"><a href="home.html">Home</a> / <a href="care-tips.html">Plant Care Tips</a> / ${post.cat}</div>
+        <span class="tag tag-green">${post.cat}</span>
+        <h1 style="font-size:clamp(1.9rem,3.6vw,2.8rem);margin-top:12px">${post.title}</h1>
+        <p class="subtle">By the Sri Venkateswara Nursery team · ${fmtDate(post.date)} · ${post.read} min read</p>
+        <div style="border-radius:var(--radius-lg);overflow:hidden;aspect-ratio:16/8;margin:22px 0">${plantArt(post.art, 1)}</div>
+        <p style="font-size:1.15rem;color:var(--ink)">${post.excerpt}</p>
+        ${post.body.map(([h, t]) => `<h2>${h}</h2><p>${t}</p>`).join("")}
+        <div class="notice green" style="margin-top:28px">${icon("phoneDevice")} <span>Get watering reminders for your plants with the <b>Plant Care Companion</b> in our mobile app.</span></div>
+        <div class="flex wrap" style="margin-top:20px;gap:8px"><span class="subtle">Share:</span><button class="chip">WhatsApp</button><button class="chip">Facebook</button><button class="chip">Copy link</button></div>
+      </article>
+      <div class="section" style="padding-bottom:0"><div class="section-head"><div><span class="eyebrow">Shop this guide</span><h2>Products mentioned</h2></div></div><div class="products">${related.map(productCard).join("")}</div></div>
+      </div></section>`;
+    } else {
+      const cats = ["All", ...new Set(POSTS.map((p) => p.cat))];
+      root.innerHTML = `<div class="page-head"><div class="container"><div class="crumbs"><a href="home.html">Home</a> / Plant Care Tips</div>
+        <h1>Plant Care Tips & Guides</h1><p class="muted" style="margin:0">Practical advice from our gardeners — tuned for our local climate and seasons.</p></div></div>
+        <section class="section" style="padding-top:28px"><div class="container">
+          <div class="flex wrap" style="gap:8px;margin-bottom:22px" id="cats">${cats.map((c, i) => `<button class="chip ${i ? "" : "active"}" data-c="${c}">${c}</button>`).join("")}</div>
+          <div class="grid grid-3" id="list"></div>
+        </div></section>`;
+      const paint = (c) => {
+        document.getElementById("list").innerHTML = POSTS.filter((p) => c === "All" || p.cat === c).map((p) => `
+          <a class="card post" href="care-tips.html?id=${p.id}"><div class="cover">${plantArt(p.art, 1)}</div>
+          <div class="body"><span class="tag tag-green" style="align-self:flex-start">${p.cat}</span><h3>${p.title}</h3><p class="muted" style="margin:0;font-size:.9rem">${p.excerpt}</p><span class="subtle" style="margin-top:auto">${fmtDate(p.date)} · ${p.read} min read</span></div></a>`).join("");
+      };
+      document.getElementById("cats").onclick = (e) => { const b = e.target.closest("[data-c]"); if (!b) return; document.querySelectorAll("#cats .chip").forEach((x) => x.classList.toggle("active", x === b)); paint(b.dataset.c); };
+      paint("All");
+    }
+  </script>
+</body>
+</html>

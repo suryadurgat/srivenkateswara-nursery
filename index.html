@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sri Venkateswara Nursery — Digital Platform Presentation</title>
+  <meta name="description" content="Project presentation: e-commerce website, mobile app and admin dashboard for Sri Venkateswara Nursery.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    /* ---------- Landing nav ---------- */
+    .lnav { position: sticky; top: 0; z-index: 50; background: rgba(248,246,240,.88); backdrop-filter: saturate(1.4) blur(10px); -webkit-backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid var(--line); }
+    .lnav .container { display: flex; align-items: center; gap: 22px; height: 68px; }
+    .lnav nav { display: flex; gap: 2px; margin-left: auto; }
+    .lnav nav a { padding: 8px 12px; border-radius: 8px; font-size: .88rem; font-weight: 500; color: var(--ink-2); }
+    .lnav nav a:hover, .lnav nav a.on { color: var(--forest-700); background: var(--leaf-50); }
+
+    /* ---------- Hero ---------- */
+    .lhero { background: radial-gradient(1200px 600px at 85% 10%, #2c6e4c 0%, transparent 60%), linear-gradient(160deg, var(--forest-900), var(--forest-800)); color: #fff; overflow: hidden; }
+    .lhero .container { display: grid; grid-template-columns: 1fr 1.15fr; gap: 48px; align-items: center; padding-top: 72px; padding-bottom: 88px; }
+    .lhero h1 { color: #fff; font-size: clamp(2.2rem, 4.6vw, 3.8rem); }
+    .lhero h1 em { font-style: italic; color: #a9d3b8; }
+    .lhero p.lead { color: #cfe3d6; font-size: 1.1rem; max-width: 540px; }
+    .pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); font-size: .8rem; color: #d7e8dc; margin-bottom: 18px; }
+    .meta-row { display: flex; gap: 28px; margin-top: 30px; flex-wrap: wrap; font-size: .85rem; color: #a9c9b4; }
+    .meta-row b { display: block; color: #fff; font-weight: 600; font-size: .92rem; }
+
+    /* ---------- Device frames ---------- */
+    .devices { position: relative; padding-bottom: 40px; }
+    .laptop { position: relative; }
+    .laptop .bezel { background: #0d1210; border-radius: 16px 16px 6px 6px; padding: 12px 12px 14px; box-shadow: 0 40px 80px -30px rgba(0,0,0,.6); }
+    .laptop .bezel::before { content: ""; display: block; width: 6px; height: 6px; border-radius: 50%; background: #2a332e; margin: -6px auto 6px; }
+    .laptop .base { height: 14px; margin: 0 -6%; background: linear-gradient(#cfd4d1, #9aa29e); border-radius: 0 0 14px 14px; position: relative; }
+    .laptop .base::after { content: ""; position: absolute; left: 42%; right: 42%; top: 0; height: 5px; background: #8a928e; border-radius: 0 0 6px 6px; }
+    .frame { position: relative; overflow: hidden; background: #fff; border-radius: 4px; }
+    .frame iframe { position: absolute; top: 0; left: 0; border: 0; transform-origin: 0 0; background: #fff; }
+    .frame.static iframe { pointer-events: none; }
+    .phone-sm { position: absolute; left: -36px; bottom: 0; width: 190px; background: #0d1210; border-radius: 30px; padding: 7px; box-shadow: 0 30px 60px -20px rgba(0,0,0,.6); }
+    .phone-sm .frame { border-radius: 24px; }
+    .phone { width: 100%; max-width: 270px; background: #121614; border-radius: 42px; padding: 9px; box-shadow: var(--shadow-lg); }
+    .phone .frame { border-radius: 34px; }
+
+    /* ---------- Sections ---------- */
+    .band { padding: 88px 0; }
+    .band.alt { background: var(--surface); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .band.dark { background: var(--forest-900); color: #d7e8dc; }
+    .band.dark h2, .band.dark h3 { color: #fff; }
+    .center-head { text-align: center; max-width: 720px; margin: 0 auto 44px; }
+    .center-head p { color: var(--ink-2); font-size: 1.05rem; }
+    .band.dark .center-head p { color: #a9c9b4; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-lg); margin-top: -44px; position: relative; z-index: 2; box-shadow: var(--shadow); }
+    .stats div { padding: 24px 26px; border-left: 1px solid var(--line); }
+    .stats div:first-child { border-left: 0; }
+    .stats b { display: block; font-family: var(--font-display); font-size: 2.2rem; font-weight: 500; line-height: 1.1; color: var(--forest-700); }
+    .stats span { font-size: .86rem; color: var(--ink-2); }
+    .obj { padding: 24px; }
+    .obj .ico, .deliv .ico { width: 46px; height: 46px; border-radius: 12px; background: var(--leaf-100); color: var(--forest-700); display: grid; place-items: center; margin-bottom: 14px; }
+    .obj h3 { font-size: 1.15rem; margin-bottom: 6px; }
+    .obj p { margin: 0; color: var(--ink-2); font-size: .92rem; }
+    .deliv { padding: 28px; display: flex; flex-direction: column; }
+    .deliv ul { padding-left: 18px; color: var(--ink-2); font-size: .92rem; margin: 0 0 20px; }
+    .deliv li { margin-bottom: 6px; }
+    .deliv .btn { margin-top: auto; align-self: flex-start; }
+    .cat-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 36px; }
+    .cat-strip a { text-align: center; }
+    .cat-strip .art { width: 100%; aspect-ratio: 1/1; border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 10px; border: 1px solid var(--line); transition: transform .2s; }
+    .cat-strip a:hover .art { transform: translateY(-3px); }
+    .cat-strip b { display: block; }
+    .cat-strip span { font-size: .82rem; color: var(--ink-3); }
+
+    /* ---------- Feature explorer ---------- */
+    .explorer { display: grid; grid-template-columns: 340px 1fr; gap: 36px; align-items: start; }
+    .explorer > div:last-child { position: sticky; top: 88px; }
+    .ex-list { display: grid; gap: 6px; }
+    .ex-item { text-align: left; border: 1px solid transparent; background: transparent; border-radius: 14px; padding: 14px 16px; cursor: pointer; display: grid; grid-template-columns: 38px 1fr; gap: 12px; align-items: start; transition: background .15s, border-color .15s; }
+    .ex-item:hover { background: var(--surface); }
+    .ex-item.on { background: var(--surface); border-color: var(--leaf-400); box-shadow: var(--shadow-sm); }
+    .ex-item .ico { width: 38px; height: 38px; border-radius: 10px; background: var(--leaf-100); color: var(--forest-700); display: grid; place-items: center; }
+    .ex-item.on .ico { background: var(--forest-700); color: #fff; }
+    .ex-item b { display: block; font-size: .96rem; }
+    .ex-item small { color: var(--ink-3); font-size: .78rem; }
+    .ex-detail { margin-top: 22px; }
+    .ex-detail ul { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 22px; padding: 0; list-style: none; margin: 14px 0 18px; }
+    .ex-detail li { display: flex; gap: 8px; font-size: .9rem; color: var(--ink-2); }
+    .ex-detail li svg { color: var(--ok); margin-top: 2px; }
+
+    /* ---------- Journey ---------- */
+    .journey { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; counter-reset: j; }
+    .journey > div { position: relative; padding: 22px 18px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); border-radius: var(--radius); counter-increment: j; }
+    .journey > div::before { content: counter(j, decimal-leading-zero); font-family: var(--font-display); font-size: 1.5rem; color: #7fc49a; display: block; margin-bottom: 10px; }
+    .journey b { color: #fff; display: block; margin-bottom: 4px; }
+    .journey p { margin: 0; font-size: .86rem; color: #a9c9b4; }
+
+    /* ---------- App showcase ---------- */
+    .app-phones { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; justify-items: center; }
+    .app-phones figure { margin: 0; width: 100%; max-width: 250px; text-align: center; }
+    .app-phones figcaption { margin-top: 14px; font-size: .88rem; color: var(--ink-2); }
+    .app-phones figcaption b { display: block; color: var(--ink); font-size: .96rem; }
+    .chips { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 40px; }
+    .chips span { display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font-size: .88rem; font-weight: 500; }
+    .chips svg { color: var(--forest-700); }
+
+    /* ---------- Admin ---------- */
+    .admin-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 48px; align-items: center; }
+    .check-list { list-style: none; padding: 0; margin: 18px 0 24px; display: grid; gap: 12px; }
+    .check-list li { display: flex; gap: 12px; color: #cfe3d6; }
+    .check-list li svg { color: #7fc49a; margin-top: 3px; }
+    .check-list b { color: #fff; }
+
+    /* ---------- Highlights ---------- */
+    .hl-card { border-radius: var(--radius-lg); padding: 30px; color: #fff; display: flex; flex-direction: column; min-height: 300px; position: relative; overflow: hidden; }
+    .hl-card h3 { color: #fff; font-size: 1.5rem; }
+    .hl-card p { color: rgba(255,255,255,.85); font-size: .94rem; }
+    .hl-card ul { padding-left: 18px; margin: 0 0 20px; font-size: .9rem; color: rgba(255,255,255,.9); }
+    .hl-card .btn { margin-top: auto; align-self: flex-start; }
+    .hl-card .art { position: absolute; right: -30px; bottom: -30px; width: 160px; opacity: .25; }
+
+    /* ---------- Tech ---------- */
+    .tech { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .tech > div { padding: 22px; }
+    .tech h4 { font-family: var(--font-body); font-size: .76rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; margin-bottom: 10px; }
+    .tech .t { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tech .t span { padding: 5px 11px; border-radius: 8px; background: var(--leaf-50); color: var(--forest-800); font-size: .84rem; font-weight: 600; border: 1px solid var(--leaf-200); }
+    .tech p { margin: 10px 0 0; font-size: .86rem; color: var(--ink-2); }
+
+    /* ---------- Timeline ---------- */
+    .tl { display: grid; grid-template-columns: repeat(8, 1fr); gap: 0; position: relative; }
+    .tl::before { content: ""; position: absolute; top: 19px; left: 6%; right: 6%; height: 2px; background: var(--leaf-200); }
+    .tl > div { text-align: center; padding: 0 8px; position: relative; }
+    .tl .dot { width: 40px; height: 40px; border-radius: 50%; background: var(--forest-700); color: #fff; font-weight: 700; display: grid; place-items: center; margin: 0 auto 14px; position: relative; box-shadow: 0 0 0 6px var(--bg); }
+    .tl > div:nth-child(7) .dot { background: var(--terracotta); }
+    .tl > div:nth-child(8) .dot { background: var(--leaf-400); }
+    .tl b { display: block; font-size: .92rem; line-height: 1.3; }
+    .tl span { font-size: .78rem; color: var(--ink-3); }
+
+    /* ---------- CTA ---------- */
+    .final { background: linear-gradient(140deg, var(--forest-800), var(--forest-600)); color: #fff; border-radius: 28px; padding: 60px 40px; text-align: center; }
+    .final h2 { color: #fff; font-size: clamp(1.8rem, 3.4vw, 2.6rem); }
+    .final p { color: #cfe3d6; max-width: 620px; margin: 0 auto 26px; }
+    .lfoot { padding: 30px 0 40px; font-size: .84rem; color: var(--ink-3); }
+
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+
+    @media (max-width: 1100px) {
+      .lnav nav { display: none; }
+      .explorer { grid-template-columns: 1fr; }
+      .explorer > div:last-child { position: static; }
+      .ex-list { grid-template-columns: repeat(2, 1fr); }
+      .journey { grid-template-columns: repeat(3, 1fr); }
+      .app-phones { grid-template-columns: repeat(2, 1fr); row-gap: 36px; }
+      .tl { grid-template-columns: repeat(4, 1fr); row-gap: 28px; }
+      .tl::before { display: none; }
+    }
+    @media (max-width: 860px) {
+      .lhero .container, .admin-grid { grid-template-columns: 1fr; }
+      .lhero .container { padding-top: 48px; }
+      .phone-sm { width: 120px; left: -6px; border-radius: 22px; padding: 5px; }
+      .phone-sm .frame { border-radius: 18px; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .stats div:nth-child(3) { border-left: 0; }
+      .stats div:nth-child(n+3) { border-top: 1px solid var(--line); }
+      .cat-strip { grid-template-columns: repeat(3, 1fr); }
+      .tech { grid-template-columns: 1fr; }
+      .band { padding: 64px 0; }
+      .ex-detail ul { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .ex-list { grid-template-columns: 1fr; }
+      .journey { grid-template-columns: 1fr 1fr; }
+      .app-phones { grid-template-columns: 1fr 1fr; gap: 14px; }
+      .cat-strip { grid-template-columns: repeat(2, 1fr); }
+      .tl { grid-template-columns: repeat(2, 1fr); }
+      .final { padding: 40px 20px; border-radius: 20px; }
+      .lnav .btn { padding: 0 14px; }
+      .lnav .brand-name small { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <header class="lnav"><div class="container">
+    <a href="#top" class="brand" id="brandMark"><span class="brand-name">Sri Venkateswara<small>Digital Platform · Proposal</small></span></a>
+    <nav aria-label="Sections">
+      <a href="#overview">Overview</a><a href="#products">Products</a><a href="#features">Website</a>
+      <a href="#app">Mobile App</a><a href="#admin">Admin Panel</a><a href="#tech">Technology</a><a href="#timeline">Timeline</a>
+    </nav>
+    <a href="home.html" class="btn btn-primary btn-sm">Open live demo</a>
+  </div></header>
+
+  <!-- Hero -->
+  <section class="lhero" id="top"><div class="container">
+    <div class="reveal">
+      <span class="pill"><span class="dot-live" style="margin:0"></span> Project Proposal · v1.0 · Submitted for approval</span>
+      <h1>Taking the nursery <em>online</em>: website, mobile app & owner dashboard</h1>
+      <p class="lead">A complete digital commerce platform for Sri Venkateswara Nursery. Customers can browse flowering plants, seeds and saplings, pay securely and get home delivery, and the owner manages everything from one dashboard.</p>
+      <div class="flex wrap" style="margin-top:26px;gap:12px">
+        <a href="#features" class="btn btn-light">See the features</a>
+        <a href="home.html" class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.35)">Try the clickable prototype →</a>
+      </div>
+      <div class="meta-row">
+        <div><b>Prepared for</b>Mr. Satish Vinti, Owner</div>
+        <div><b>Prepared by</b>Akula Surya Durga Sai Ram</div>
+        <div><b>Duration</b>20 weeks · 8 phases</div>
+      </div>
+    </div>
+    <div class="devices reveal">
+      <div class="laptop"><div class="bezel"><div class="frame static" data-src="home.html?embed=1" data-w="1366" data-h="854" style="aspect-ratio:1366/854"></div></div><div class="base"></div></div>
+      <div class="phone-sm"><div class="frame static" data-src="mobile-app.html?embed=1" data-w="252" data-h="542" style="aspect-ratio:252/542"></div></div>
+    </div>
+  </div></section>
+
+  <!-- Stats -->
+  <div class="container"><div class="stats reveal">
+    <div><b>3</b><span>Applications: website, Android & iOS app, admin panel</span></div>
+    <div><b>1</b><span>Shared backend, so prices & stock always match</span></div>
+    <div><b>12+</b><span>Feature modules, from catalogue to festival offers</span></div>
+    <div><b>5 months</b><span>From requirements to launch & support</span></div>
+  </div></div>
+
+  <!-- Objectives -->
+  <section class="band" id="overview"><div class="container">
+    <div class="center-head reveal"><span class="eyebrow">Why go digital</span><h2>From walk-in nursery to an online-first business</h2>
+      <p>Today the nursery sells only to customers who visit in person. This platform opens a second storefront that's open 24×7, reaches customers across the city and beyond, and makes daily operations easier.</p></div>
+    <div class="grid grid-3" id="objectives"></div>
+  </div></section>
+
+  <!-- Deliverables -->
+  <section class="band alt"><div class="container">
+    <div class="center-head reveal"><span class="eyebrow">What we're building</span><h2>Three applications, one platform</h2>
+      <p>Website, app and dashboard share one backend and database. A product added once appears everywhere instantly.</p></div>
+    <div class="grid grid-3" id="deliverables"></div>
+  </div></section>
+
+  <!-- Products -->
+  <section class="band" id="products"><div class="container">
+    <div class="center-head reveal"><span class="eyebrow">Product range</span><h2>Everything the nursery sells, online</h2>
+      <p>Five main categories at launch, each with filters for plant type, sunlight, pot size and occasion (indoor, outdoor, gifting, festival).</p></div>
+    <div class="cat-strip reveal" id="cats"></div>
+    <div class="section-head reveal" style="margin-bottom:18px"><div><h3 style="font-size:1.4rem;margin:0">Sample product listings</h3><p class="muted" style="margin:4px 0 0">Live cards from the prototype: wishlist, add to cart, stock status and discounts all work.</p></div><a href="shop.html" class="btn btn-outline btn-sm">Browse full catalogue</a></div>
+    <div class="products reveal" id="sample"></div>
+  </div></section>
+
+  <!-- Feature explorer -->
+  <section class="band alt" id="features"><div class="container">
+    <div class="center-head reveal"><span class="eyebrow">Customer website</span><h2>Explore every feature, live</h2>
+      <p>Pick a module to preview the working prototype page. Every preview is interactive, and you can open any of them full screen.</p></div>
+    <div class="explorer reveal">
+      <div class="ex-list" id="exList" role="tablist" aria-label="Website modules"></div>
+      <div>
+        <div class="laptop"><div class="bezel"><div class="frame" id="exFrame" data-w="1366" data-h="854" style="aspect-ratio:1366/854"></div></div><div class="base"></div></div>
+        <div class="ex-detail" id="exDetail"></div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- Customer journey -->
+  <section class="band dark"><div class="container">
+    <div class="center-head reveal"><span class="eyebrow" style="color:#7fc49a">Customer journey</span><h2>From discovery to doorstep in six steps</h2>
+      <p>Designed for mobile-first Indian shoppers: OTP login instead of passwords, UPI in one tap, and order updates on WhatsApp.</p></div>
+    <div class="journey reveal">
+      <div><b>Discover</b><p>Finds the nursery on Google, Instagram or WhatsApp, or opens the app</p></div>
+      <div><b>Browse</b><p>Filters by category, sunlight, pot size or occasion; reads care tips</p></div>
+      <div><b>Add to cart</b><p>Picks quantity, checks delivery for their pin code, applies a festival coupon</p></div>
+      <div><b>Pay</b><p>UPI, card, net banking or Cash on Delivery, secured by Razorpay</p></div>
+      <div><b>Track</b><p>Gets SMS, WhatsApp & push updates: confirmed → dispatched → delivered</p></div>
+      <div><b>Return</b><p>Watering reminders, reviews, wishlist alerts and one-tap reorder</p></div>
+    </div>
+  </div></section>
+
+  <!-- Mobile app -->
+  <section class="band" id="app"><div class="container">
+    <div class="center-head reveal"><span class="eyebrow">Mobile application · Android & iOS</span><h2>The nursery in every customer's pocket</h2>
+      <p>One React Native codebase for both platforms. It has the same shopping experience as the website plus features that only make sense on a phone.</p></div>
+    <div class="app-phones reveal" id="phones"></div>
+    <div class="chips reveal" id="appChips"></div>
+    <div style="text-align:center;margin-top:30px" class="reveal"><a href="mobile-app.html" class="btn btn-primary">View all 9 app screens</a></div>
+  </div></section>
+
+  <!-- Admin -->
+  <section class="band dark" id="admin"><div class="container admin-grid">
+    <div class="reveal">
+      <span class="eyebrow" style="color:#7fc49a">Admin panel · Owner dashboard</span>
+      <h2>Run the whole business from one screen</h2>
+      <p style="color:#a9c9b4">Built for daily use by the owner and staff, on a desktop or a phone. Common tasks take three clicks or fewer.</p>
+      <ul class="check-list" id="adminList"></ul>
+      <div class="flex wrap"><a href="admin.html" class="btn btn-light">Open admin panel</a><span class="subtle" style="color:#a9c9b4">Demo login is pre-filled · try Owner and Staff roles</span></div>
+    </div>
+    <div class="reveal">
+      <div class="laptop"><div class="bezel"><div class="frame" data-src="admin.html?embed=1#dashboard" data-w="1366" data-h="854" style="aspect-ratio:1366/854"></div></div><div class="base"></div></div>
+    </div>
+  </div></section>
+
+  <!-- Highlights -->
+  <section class="band"><div class="container">
+    <div class="center-head reveal"><span class="eyebrow">Built for this nursery</span><h2>Features that grow the business</h2>
+      <p>These go beyond a standard online shop and fit how a nursery actually earns: functions, festivals and repeat gardeners.</p></div>
+    <div class="grid grid-3 reveal" id="highlights"></div>
+  </div></section>
+
+  <!-- Payments & security -->
+  <section class="band alt"><div class="container">
+    <div class="center-head reveal"><span class="eyebrow">Payments & trust</span><h2>Secure by design</h2>
+      <p>Customers pay the way they already do every day, and their data and money are protected at every step.</p></div>
+    <div class="grid grid-4 reveal" id="trust"></div>
+  </div></section>
+
+  <!-- Technology -->
+  <section class="band" id="tech"><div class="container">
+    <div class="center-head reveal"><span class="eyebrow">Technology</span><h2>A modern, proven stack</h2>
+      <p>Widely used, well-supported technologies chosen for speed, SEO, low running cost and easy maintenance. Full architecture, data model and API design are in the <a href="overview.html#arch" style="text-decoration:underline">Project Blueprint</a>.</p></div>
+    <div class="tech reveal">
+      <div class="card"><h4>Website</h4><div class="t"><span>React.js</span><span>Next.js</span><span>Tailwind CSS</span></div><p>Server-rendered pages load fast and rank well on Google.</p></div>
+      <div class="card"><h4>Mobile app</h4><div class="t"><span>React Native</span><span>RN Paper</span></div><p>One codebase for Android and iOS, so it's faster to build and cheaper to maintain.</p></div>
+      <div class="card"><h4>Backend</h4><div class="t"><span>Node.js</span><span>Express.js</span><span>REST API</span></div><p>One API serves the website, the app and the admin panel.</p></div>
+      <div class="card"><h4>Data & storage</h4><div class="t"><span>MongoDB</span><span>MySQL</span><span>Cloudinary / S3</span></div><p>Flexible catalogue, transaction-safe orders, fast image delivery.</p></div>
+      <div class="card"><h4>Payments & auth</h4><div class="t"><span>Razorpay</span><span>JWT</span><span>OTP · MSG91</span></div><p>UPI, cards, net banking, COD and passwordless OTP login.</p></div>
+      <div class="card"><h4>Integrations & hosting</h4><div class="t"><span>Firebase FCM</span><span>WhatsApp API</span><span>Google Maps</span><span>Analytics</span><span>Vercel</span><span>AWS</span></div><p>Push notifications, order messages, store locator, HTTPS hosting.</p></div>
+    </div>
+  </div></section>
+
+  <!-- Timeline -->
+  <section class="band alt" id="timeline"><div class="container">
+    <div class="center-head reveal"><span class="eyebrow">Delivery plan</span><h2>Eight phases, with your review at every stage</h2>
+      <p>An Agile approach: you see and approve designs before coding starts, test the website and app before launch, and get 30 days of support after.</p></div>
+    <div class="tl reveal" id="tl"></div>
+    <div style="text-align:center;margin-top:36px" class="reveal"><a href="overview.html#timeline" class="btn btn-outline">Detailed milestones & sign-offs</a></div>
+  </div></section>
+
+  <!-- CTA -->
+  <section class="band" style="padding-bottom:40px"><div class="container">
+    <div class="final reveal">
+      <span class="eyebrow" style="color:#a9d3b8">Next step</span>
+      <h2>Ready to grow Sri Venkateswara Nursery online</h2>
+      <p>The kickoff meeting will confirm product categories, visual identity (logo, colours, name) and sign-off on the Phase 1 wireframes. This prototype is the starting point.</p>
+      <div class="flex wrap" style="justify-content:center;gap:12px">
+        <a href="home.html" class="btn btn-light">Explore the customer website</a>
+        <a href="admin.html" class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.35)">Admin panel</a>
+        <a href="mobile-app.html" class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.35)">Mobile app</a>
+        <a href="overview.html" class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.35)">Technical blueprint</a>
+      </div>
+    </div>
+  </div></section>
+
+  <footer class="lfoot"><div class="container flex between wrap">
+    <span>Sri Venkateswara Nursery: E-Commerce Website & Mobile Application · Project Proposal v1.0</span>
+    <span>Prepared by Akula Surya Durga Sai Ram · 23 October 2026 · Reference prototype with sample data</span>
+  </div></footer>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    document.getElementById("brandMark").insertAdjacentHTML("afterbegin", BRAND_MARK);
+
+    /* ---------- Scaled live previews (iframes rendered at desktop/phone size, scaled to fit the frame) ---------- */
+    function mountFrame(el, src) {
+      el.innerHTML = `<iframe src="${src}" loading="lazy" title="Live preview" width="${el.dataset.w}" height="${el.dataset.h}" tabindex="-1"></iframe>`;
+      fitFrame(el);
+    }
+    function fitFrame(el) {
+      const f = el.querySelector("iframe"); if (!f) return;
+      f.style.transform = `scale(${el.clientWidth / +el.dataset.w})`;
+    }
+    const ro = new ResizeObserver((es) => es.forEach((e) => fitFrame(e.target)));
+    document.querySelectorAll(".frame").forEach((el) => { ro.observe(el); if (el.dataset.src) mountFrame(el, el.dataset.src); });
+
+    /* ---------- Objectives (proposal §2) ---------- */
+    document.getElementById("objectives").innerHTML = [
+      ["chart", "Increase business reach", "Move from walk-in only to online-first and reach customers across the city and beyond."],
+      ["cart", "Online sales, 24×7", "Customers buy flowering plants, seeds, saplings and accessories anytime, from any device."],
+      ["star", "Brand visibility", "A professional online identity that builds trust and recognition for the nursery."],
+      ["settings", "Streamlined operations", "One simple dashboard for products, stock, orders, deliveries and bulk enquiries."],
+      ["heart", "Customer retention", "Wishlists, order history, festival offers, loyalty and plant-care reminders bring customers back."],
+      ["phoneDevice", "Mobile accessibility", "A dedicated Android & iOS app for the smartphone users who make up most buyers."],
+    ].map(([i, t, d]) => `<div class="card obj reveal"><span class="ico">${icon(i, 22)}</span><h3>${t}</h3><p>${d}</p></div>`).join("");
+
+    /* ---------- Deliverables ---------- */
+    document.getElementById("deliverables").innerHTML = [
+      ["code", "Customer Website", "Fully responsive storefront for desktop, tablet and mobile browsers.", ["Homepage, catalogue, product pages", "Cart, coupons & secure checkout", "Accounts, order tracking, wishlist", "Bulk orders, festival offers, blog"], "home.html", "Open website"],
+      ["phoneDevice", "Mobile App", "Android & iOS app with the full shopping experience, optimised for touch.", ["UPI one-tap payments", "Push notifications & order tracking", "Biometric login, offline browsing, dark mode", "Plant Care Companion & store locator"], "mobile-app.html", "View app screens"],
+      ["settings", "Admin Panel", "Private dashboard for the nursery owner and staff.", ["Products, categories, stock alerts", "Order processing & customer notifications", "Bulk quote management", "Campaigns, banners, reports & analytics"], "admin.html", "Open admin panel"],
+    ].map(([i, t, d, items, h, cta]) => `<div class="card deliv reveal"><span class="ico">${icon(i, 22)}</span><h3 style="font-size:1.4rem">${t}</h3><p class="muted">${d}</p><ul>${items.map((x) => `<li>${x}</li>`).join("")}</ul><a href="${h}" class="btn btn-outline btn-sm">${cta} →</a></div>`).join("");
+
+    /* ---------- Products ---------- */
+    document.getElementById("cats").innerHTML = CATEGORIES.map((c) => `<a href="shop.html?cat=${c.id}"><div class="art">${plantArt(c.art)}</div><b>${c.name}</b><span>${c.blurb}</span></a>`).join("");
+    document.getElementById("sample").innerHTML = [103, 301, 504, 201].map(byId).filter(Boolean).map(productCard).join("");
+
+    /* ---------- Feature explorer (proposal §4) ---------- */
+    const MODULES = [
+      ["4.1", "leaf", "Homepage", "home.html", "First impression and quick navigation into the store.", ["Hero banner with featured plants", "Quick category navigation", "Best-sellers & new arrivals", "Festival offer countdown", "Customer testimonials", "Newsletter subscription"]],
+      ["4.2", "search", "Product Catalogue", "shop.html?cat=flowering", "Find the right plant in seconds.", ["Browse by category, type or occasion", "Filters: price, plant type, sun, pot size, stock", "Search with auto-suggestions", "Sort by popularity, price, newest, rating", "Removable active-filter chips", "Image-rich product cards"]],
+      ["4.3", "eye", "Product Detail", "product.html?id=103", "Everything a buyer needs to decide with confidence.", ["Multi-image gallery", "Care instructions & growing tips", "Price, MRP, discount & stock status", "Quantity, Add to Cart, Buy Now", "Pin-code delivery & ETA check", "Ratings, reviews & related products"]],
+      ["4.5", "cart", "Cart & Checkout", "cart.html", "A short, familiar checkout with every Indian payment option.", ["Update quantities, remove items", "Coupon codes (try DIWALI20)", "Delivery address, date & time slot", "UPI, cards, net banking, COD", "Order summary & confirmation", "Email, SMS & WhatsApp confirmation"]],
+      ["4.4", "user", "Customer Account", "account.html", "Passwordless login and a personal order history.", ["Login with phone/email + OTP (demo: 123456)", "Profile & address book", "Order history with live tracking", "Wishlist with back-in-stock alerts", "Invoice download & reorder", "Loyalty points (Phase 2)"]],
+      ["4.9", "gift", "Bulk & Event Orders", "bulk-orders.html", "A new revenue stream from weddings, functions and corporates.", ["Dedicated bulk / event section", "Request-a-Quote form", "Tiered wholesale pricing", "Delivery on the function date", "Decoration & arrangement enquiries", "Admin quotes & confirms from dashboard"]],
+      ["4.10", "tag", "Festival Offers", "offers.html", "Peak-season sales for Diwali, Ugadi, Sankranti and more.", ["Festival discounts & bundles", "Ready-made gift packs", "Scheduled, time-limited pricing", "Homepage festival banners", "Campaign coupon codes", "Push & email announcements"]],
+      ["4.7", "file", "Blog / Plant Care", "care-tips.html", "Helpful content that builds trust and brings Google traffic.", ["Care guides & growing articles", "Category filters", "Products linked inside articles", "SEO-friendly pages", "Easy publishing from admin", "Share to WhatsApp & social"]],
+      ["4.8", "map", "Contact & Store Info", "contact.html", "Make it easy to reach or visit the nursery.", ["Address, phone, WhatsApp, email", "Google Maps location", "Working hours & open-now status", "Enquiry form to admin", "Frequently asked questions", "Get-directions link"]],
+    ];
+    const exList = document.getElementById("exList"), exFrame = document.getElementById("exFrame"), exDetail = document.getElementById("exDetail");
+    exList.innerHTML = MODULES.map(([s, i, t, , d], k) => `<button class="ex-item ${k ? "" : "on"}" role="tab" data-k="${k}"><span class="ico">${icon(i, 19)}</span><span><b>${t}</b><small>§${s} · ${d}</small></span></button>`).join("");
+    function showModule(k) {
+      const [s, , t, src, d, feats] = MODULES[k];
+      exList.querySelectorAll(".ex-item").forEach((b) => b.classList.toggle("on", +b.dataset.k === k));
+      if (src === "cart.html" && !Store.cart().length) Store.set("cart", [{ id: 103, qty: 2 }, { id: 301, qty: 1 }]); // so the checkout preview isn't empty
+      const url = src + (src.includes("?") ? "&" : "?") + "embed=1";
+      mountFrame(exFrame, url);
+      exDetail.innerHTML = `<div class="flex between wrap"><h3 style="margin:0;font-size:1.35rem">${t} <span class="tag tag-gray" style="vertical-align:4px">Proposal §${s}</span></h3><a href="${src}" class="btn btn-primary btn-sm">Open full page →</a></div>
+        <ul>${feats.map((f) => `<li>${icon("check", 16, 2.4)}<span>${f}</span></li>`).join("")}</ul>`;
+    }
+    exList.onclick = (e) => { const b = e.target.closest(".ex-item"); if (b) showModule(+b.dataset.k); };
+    showModule(0);
+
+    /* ---------- Mobile app (proposal §5) ---------- */
+    document.getElementById("phones").innerHTML = [[1, "Home", "Location-aware, festival banners"], [3, "UPI checkout", "GPay, PhonePe, Paytm in one tap"], [4, "Order tracking", "Push alerts at every step"], [5, "Plant Care Companion", "Watering reminders & calendar"]]
+      .map(([n, t, d]) => `<figure><div class="phone"><div class="frame static" data-w="252" data-h="542" style="aspect-ratio:252/542" data-src="mobile-app.html?embed=${n}"></div></div><figcaption><b>${t}</b>${d}</figcaption></figure>`).join("");
+    document.querySelectorAll("#phones .frame").forEach((el) => { ro.observe(el); mountFrame(el, el.dataset.src); });
+    document.getElementById("appChips").innerHTML = [["bell", "Push notifications"], ["fingerprint", "Fingerprint / Face ID"], ["wifiOff", "Offline browsing"], ["moon", "Dark mode"], ["pin", "Delivery check by location"], ["map", "Store locator"], ["heart", "Back-in-stock alerts"], ["sprout", "Onboarding"]]
+      .map(([i, t]) => `<span>${icon(i, 17)} ${t}</span>`).join("");
+
+    /* ---------- Admin (proposal §4.6) ---------- */
+    document.getElementById("adminList").innerHTML = [
+      ["Live dashboard", "revenue, today's orders, pending work, low-stock and quote alerts"],
+      ["Order processing", "new → processing → dispatched → delivered, with automatic customer notifications"],
+      ["Products & inventory", "add/edit products, stock levels, low-stock thresholds, restocking"],
+      ["Bulk quotes", "review event requests, prepare quotes, confirm bookings"],
+      ["Marketing", "festival campaigns, coupons, banners, push & email broadcasts"],
+      ["Reports & roles", "sales analytics, CSV export, Owner / Staff permissions"],
+    ].map(([b, t]) => `<li>${icon("check", 18, 2.4)}<span><b>${b}</b>: ${t}</span></li>`).join("");
+
+    /* ---------- Highlights ---------- */
+    document.getElementById("highlights").innerHTML = [
+      ["linear-gradient(140deg,#1a4430,#3d8a5f)", "Bulk & Event Orders", "Weddings, housewarmings, temple functions, corporate gifting and plantation drives.", ["Request-a-Quote in 2 minutes", "10–20%+ bulk pricing tiers", "Delivery on the function date"], "bulk-orders.html", { kind: "tree", f: "#ffffff", bg: "none" }],
+      ["linear-gradient(140deg,#7a3d12,#d99a1b)", "Festival Campaigns", "Run Diwali, Ugadi, Sankranti and Dussehra sales that switch on and off by themselves.", ["Scheduled pricing & coupons", "Gift packs & themed collections", "Banners + push + email together"], "offers.html", { kind: "flower", f: "#ffffff", bg: "none", pot: "#ffffff" }],
+      ["linear-gradient(140deg,#24496b,#2f6fa3)", "Plant Care Companion", "Keeps customers' plants alive, so they keep coming back.", ["Watering & feeding reminders", "Seasonal gardening calendar", "Care guides for every product"], "mobile-app.html", { kind: "can", f: "#ffffff", bg: "none" }],
+    ].map(([bg, t, d, items, h, art]) => `<div class="hl-card" style="background:${bg}"><div class="art">${plantArt(art)}</div><h3>${t}</h3><p>${d}</p><ul>${items.map((x) => `<li>${x}</li>`).join("")}</ul><a href="${h}" class="btn btn-light btn-sm">See it in action →</a></div>`).join("");
+
+    /* ---------- Trust ---------- */
+    document.getElementById("trust").innerHTML = [
+      ["phoneDevice", "UPI & cards", "Google Pay, PhonePe, Paytm, all cards, net banking and wallets via Razorpay."],
+      ["cash", "Cash on Delivery", "COD for customers who prefer to pay at the door, with safe order limits."],
+      ["lock", "OTP login & JWT", "No passwords to forget. Secure, expiring sessions and role-based admin access."],
+      ["shield", "Tested & protected", "HTTPS everywhere, protection against SQL injection & XSS, and server-verified payments."],
+    ].map(([i, t, d]) => `<div class="card card-pad"><span class="ico" style="width:44px;height:44px;border-radius:12px;background:var(--leaf-100);color:var(--forest-700);display:grid;place-items:center;margin-bottom:12px">${icon(i)}</span><b style="display:block;margin-bottom:4px">${t}</b><p class="muted" style="margin:0;font-size:.9rem">${d}</p></div>`).join("");
+
+    /* ---------- Timeline (proposal §8) ---------- */
+    document.getElementById("tl").innerHTML = [["Requirements & wireframes", "Week 1–2"], ["UI/UX design & approval", "Week 3–4"], ["Backend APIs & payments", "Week 5–7"], ["Website development", "Week 8–10"], ["Mobile app development", "Week 11–13"], ["Testing & QA", "Week 14–15"], ["Deployment & launch", "Week 16"], ["Post-launch support", "Week 17–20"]]
+      .map(([t, w], i) => `<div><span class="dot">${i + 1}</span><b>${t}</b><span>${w}</span></div>`).join("");
+
+    /* ---------- Scroll reveal & active nav ---------- */
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: 0.12 });
+    document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+    const navLinks = [...document.querySelectorAll(".lnav nav a")];
+    const so = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) navLinks.forEach((a) => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id)); }), { rootMargin: "-40% 0px -55% 0px" });
+    ["overview", "products", "features", "app", "admin", "tech", "timeline"].forEach((id) => so.observe(document.getElementById(id)));
+  </script>
+</body>
+</html>

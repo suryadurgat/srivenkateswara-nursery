@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shop Plants — Sri Venkateswara Nursery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="page-head"><div class="container">
+    <div class="crumbs"><a href="home.html">Home</a> / <span id="crumb">Shop</span></div>
+    <h1 id="title">All Products</h1>
+    <p class="muted" id="subtitle" style="margin:0">Browse our full catalogue of plants, seeds, saplings and gardening essentials.</p>
+  </div></div>
+
+  <main class="section" style="padding-top:32px">
+    <div class="container shop">
+      <!-- 4.2 Filters -->
+      <aside class="card filters" aria-label="Filters">
+        <div class="flex between"><b>Filters</b><button class="btn btn-ghost btn-sm" id="reset">Clear all</button></div>
+        <div class="filter-group"><h4>Category</h4><div id="f-cat"></div></div>
+        <div class="filter-group"><h4>Occasion</h4><div id="f-occ"></div></div>
+        <div class="filter-group"><h4>Plant type</h4><div id="f-type"></div></div>
+        <div class="filter-group"><h4>Sun requirement</h4><div id="f-sun"></div></div>
+        <div class="filter-group"><h4>Pot size</h4><div id="f-pot"></div></div>
+        <div class="filter-group">
+          <h4>Price range</h4>
+          <input type="range" class="range" id="f-price" min="0" max="1000" step="50" value="1000" aria-label="Maximum price">
+          <div class="flex between subtle"><span>₹0</span><span>Up to <b id="priceVal">₹1,000</b></span></div>
+        </div>
+        <div class="filter-group"><h4>Availability</h4><label class="check"><input type="checkbox" id="f-stock"> In stock only</label></div>
+      </aside>
+
+      <section>
+        <div class="toolbar">
+          <span class="muted" id="count"></span>
+          <label class="flex" style="gap:8px"><span class="subtle">Sort by</span>
+            <select id="sort">
+              <option value="popular">Popularity</option>
+              <option value="low">Price: Low to High</option>
+              <option value="high">Price: High to Low</option>
+              <option value="newest">Newest First</option>
+              <option value="rating">Customer Rating</option>
+            </select>
+          </label>
+        </div>
+        <div class="active-filters" id="chips"></div>
+        <div class="products" id="grid" style="grid-template-columns:repeat(3,1fr)"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    renderLayout(qs("cat") || (qs("occasion") ? "" : "shop"));
+
+    const state = {
+      cat: new Set(qs("cat") ? [qs("cat")] : []),
+      occ: new Set(qs("occasion") ? [qs("occasion")] : []),
+      type: new Set(), sun: new Set(), pot: new Set(),
+      price: 1000, stock: false, q: qs("q") || "", sort: qs("sort") || "popular",
+    };
+    const groups = {
+      cat: CATEGORIES.map((c) => [c.id, c.name]),
+      occ: [["indoor", "Indoor"], ["outdoor", "Outdoor"], ["gifting", "Gifting"], ["festival", "Festival & Pooja"]],
+      type: [["Indoor", "Indoor"], ["Outdoor", "Outdoor"]],
+      sun: [["Full Sun", "Full Sun"], ["Partial Sun", "Partial Sun"], ["Shade", "Shade / Indirect"]],
+      pot: [["Small", "Small (4–6 in)"], ["Medium", "Medium (6–10 in)"], ["Large", "Large (10 in +)"]],
+    };
+    const field = { cat: "cat", occ: "occasion", type: "type", sun: "sun", pot: "pot" };
+
+    for (const [g, opts] of Object.entries(groups)) {
+      document.getElementById("f-" + g).innerHTML = opts.map(([v, l]) =>
+        `<label class="check"><input type="checkbox" data-g="${g}" value="${v}" ${state[g].has(v) ? "checked" : ""}> ${l}</label>`).join("");
+    }
+    document.querySelector(".filters").addEventListener("change", (e) => {
+      const t = e.target;
+      if (t.dataset.g) { t.checked ? state[t.dataset.g].add(t.value) : state[t.dataset.g].delete(t.value); }
+      if (t.id === "f-stock") state.stock = t.checked;
+      render();
+    });
+    document.getElementById("f-price").addEventListener("input", (e) => { state.price = +e.target.value; render(); });
+    document.getElementById("sort").value = state.sort;
+    document.getElementById("sort").addEventListener("change", (e) => { state.sort = e.target.value; render(); });
+    document.getElementById("reset").addEventListener("click", () => {
+      Object.keys(groups).forEach((g) => state[g].clear());
+      state.price = 1000; state.stock = false; state.q = "";
+      document.querySelectorAll(".filters input[type=checkbox]").forEach((c) => (c.checked = false));
+      document.getElementById("f-price").value = 1000;
+      render();
+    });
+    document.getElementById("chips").addEventListener("click", (e) => {
+      const c = e.target.closest("[data-rm]"); if (!c) return;
+      const [g, v] = c.dataset.rm.split("|");
+      if (g === "q") state.q = ""; else if (g === "price") { state.price = 1000; document.getElementById("f-price").value = 1000; }
+      else if (g === "stock") { state.stock = false; document.getElementById("f-stock").checked = false; }
+      else { state[g].delete(v); const cb = document.querySelector(`[data-g="${g}"][value="${v}"]`); if (cb) cb.checked = false; }
+      render();
+    });
+
+    function render() {
+      let list = PRODUCTS.filter((p) => {
+        const match = (g) => !state[g].size || (g === "occ" ? p.occasion.some((o) => state.occ.has(o)) : state[g].has(p[field[g]]));
+        return match("cat") && match("occ") && match("type") && match("sun") && match("pot") &&
+          p.price <= state.price && (!state.stock || p.stock > 0) &&
+          (!state.q || (p.name + " " + catName(p.cat) + " " + p.desc).toLowerCase().includes(state.q.toLowerCase()));
+      });
+      const sorters = { popular: (a, b) => b.pop - a.pop, low: (a, b) => a.price - b.price, high: (a, b) => b.price - a.price, newest: (a, b) => b.added.localeCompare(a.added), rating: (a, b) => b.rating - a.rating };
+      list.sort(sorters[state.sort]);
+
+      const one = state.cat.size === 1 ? CATEGORIES.find((c) => c.id === [...state.cat][0]) : null;
+      document.getElementById("title").textContent = state.q ? `Results for “${state.q}”` : one ? one.name : "All Products";
+      document.getElementById("crumb").textContent = one ? one.name : "Shop";
+      document.getElementById("subtitle").textContent = one ? one.blurb : "Browse our full catalogue of plants, seeds, saplings and gardening essentials.";
+      document.getElementById("count").innerHTML = `Showing <b>${list.length}</b> of ${PRODUCTS.length} products`;
+      document.getElementById("priceVal").textContent = inr(state.price);
+
+      const chips = [];
+      if (state.q) chips.push(["q|", `Search: ${state.q}`]);
+      for (const g of Object.keys(groups)) state[g].forEach((v) => chips.push([`${g}|${v}`, groups[g].find((o) => o[0] === v)?.[1] || v]));
+      if (state.price < 1000) chips.push(["price|", `Under ${inr(state.price)}`]);
+      if (state.stock) chips.push(["stock|", "In stock"]);
+      document.getElementById("chips").innerHTML = chips.map(([k, l]) => `<button class="chip active" data-rm="${k}">${esc(l)} ${icon("x", 14)}</button>`).join("");
+
+      document.getElementById("grid").innerHTML = list.length ? list.map(productCard).join("") :
+        `<div class="empty-state card" style="grid-column:1/-1">${icon("search", 32)}<h3 style="margin-top:12px">No products match these filters</h3><p>Try removing a filter or searching for something else.</p></div>`;
+    }
+    render();
+  </script>
+  <style>
+    @media (max-width:1024px){#grid{grid-template-columns:repeat(2,1fr)!important}}
+  </style>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Festival Offers — Sri Venkateswara Nursery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <main>
+    <!-- Active festival hero -->
+    <section class="hero" style="background:linear-gradient(120deg,#6b3410,#b9572f 60%,#d99a1b)">
+      <div class="container">
+        <div>
+          <span class="eyebrow" style="color:#ffe2a8">Now live · Oct 25 – Nov 10, 2026</span>
+          <h1>Diwali Green Festival</h1>
+          <p style="color:#fde9d3">Light up homes with living gifts. 20% off on flowering plants, ceramic planters and festive gift packs on orders above ₹499.</p>
+          <div class="coupon" style="max-width:420px;margin-top:22px">
+            <div><div class="subtle" style="color:#8a5d00">Use code at checkout</div><code>DIWALI20</code></div>
+            <button class="btn btn-accent btn-sm" data-copy="DIWALI20">Copy code</button>
+          </div>
+          <div style="margin-top:24px"><p style="margin-bottom:8px;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:#ffe2a8">Offer ends in</p><div class="countdown" id="cd"></div></div>
+        </div>
+        <div class="hero-art"><div class="blob"></div><div id="heroArt"></div></div>
+      </div>
+    </section>
+
+    <!-- Festival collection -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head"><div><span class="eyebrow">Festival collection</span><h2>Diwali gift packs & festive plants</h2></div><a href="shop.html?occasion=festival" class="btn btn-outline btn-sm">See all festive plants</a></div>
+        <div class="products" id="festive"></div>
+      </div>
+    </section>
+
+    <!-- Coupons -->
+    <section class="section" style="background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+      <div class="container">
+        <div class="section-head"><div><span class="eyebrow">Active coupon codes</span><h2>Save more on every order</h2></div></div>
+        <div class="grid grid-3" id="coupons"></div>
+      </div>
+    </section>
+
+    <!-- Festival calendar -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head"><div><span class="eyebrow">Festival calendar</span><h2>Upcoming seasonal promotions</h2></div>
+          <p class="muted">Every campaign is created and scheduled from the admin panel — banners, pricing, coupons and notifications go live automatically.</p></div>
+        <div class="grid grid-4" id="fests"></div>
+      </div>
+    </section>
+
+    <section class="section-sm">
+      <div class="container">
+        <div class="notice gold"><span><b>Never miss a deal:</b> enable notifications in our mobile app or subscribe to the newsletter to get festival offers before they go live.</span></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    renderLayout("offers");
+    document.querySelector(".notice.gold").insertAdjacentHTML("afterbegin", icon("bell"));    document.getElementById("heroArt").innerHTML = plantArt({ kind: "flower", f: "#ffffff", bg: "none", pot: "#d99a1b", c: "#f2d45c" });
+    document.getElementById("festive").innerHTML = PRODUCTS.filter((p) => p.occasion.includes("festival") || p.occasion.includes("gifting")).sort((a, b) => (b.festival ? 1 : 0) - (a.festival ? 1 : 0) || b.pop - a.pop).slice(0, 8).map(productCard).join("");
+    document.getElementById("coupons").innerHTML = Object.entries(COUPONS).map(([code, c]) => `<div class="coupon"><div><code>${code}</code><div class="subtle" style="color:var(--ink-2)">${c.label}${c.min ? ` · min. order ${inr(c.min)}` : ""}</div></div><button class="btn btn-outline btn-sm" data-copy="${code}">${icon("copy", 15)} Copy</button></div>`).join("");
+    document.getElementById("fests").innerHTML = FESTIVALS.map((f) => `<div class="card" style="overflow:hidden">
+      <div style="background:linear-gradient(120deg,${f.color[0]},${f.color[1]});color:#fff;padding:20px"><span class="tag" style="background:rgba(255,255,255,.2);color:#fff">${f.active ? "● Live now" : "Scheduled"}</span><h3 style="color:#fff;margin:12px 0 4px">${f.name}</h3><div style="font-size:.85rem;opacity:.9">${f.dates}</div></div>
+      <div style="padding:18px"><p class="muted" style="font-size:.9rem">${f.desc}</p><div class="flex between"><code style="font-weight:700;color:#8a5d00">${f.code}</code><b style="color:var(--ok)">${f.pct}% off</b></div></div></div>`).join("");
+    document.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-copy]"); if (!b) return;
+      navigator.clipboard?.writeText(b.dataset.copy).catch(() => {});
+      toast(`Copied ${b.dataset.copy} — apply it at checkout`, "copy");
+    });
+    function tick() {
+      const ms = Math.max(0, new Date(FESTIVALS[0].ends) - new Date());
+      document.getElementById("cd").innerHTML = [[Math.floor(ms / 864e5), "Days"], [Math.floor(ms / 36e5) % 24, "Hours"], [Math.floor(ms / 6e4) % 60, "Mins"], [Math.floor(ms / 1e3) % 60, "Secs"]].map(([v, l]) => `<div><b>${String(v).padStart(2, "0")}</b><span>${l}</span></div>`).join("");
+    }
+    tick(); setInterval(tick, 1000);
+  </script>
+</body>
+</html>

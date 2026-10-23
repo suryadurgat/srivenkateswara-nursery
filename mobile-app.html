@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mobile App Preview — Sri Venkateswara Nursery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .phones { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 40px 28px; justify-items: center; }
+    .ph-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; max-width: 300px; }
+    .ph-cap { text-align: center; }
+    .ph-cap b { display: block; font-family: var(--font-display); font-size: 1.15rem; font-weight: 500; }
+    .ph-cap span { font-size: .86rem; color: var(--ink-2); }
+    .phone { width: 270px; height: 560px; border-radius: 42px; background: #121614; padding: 9px; box-shadow: var(--shadow-lg); position: relative; flex-shrink: 0; }
+    .scr { width: 100%; height: 100%; border-radius: 34px; overflow: hidden; background: #fff; position: relative; display: flex; flex-direction: column; font-size: 12px; line-height: 1.4; color: var(--ink); }
+    .scr.dark { background: #0f1512; color: #e6efe9; }
+    .notch { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 84px; height: 24px; background: #121614; border-radius: 14px; z-index: 5; }
+    .sbar { display: flex; justify-content: space-between; padding: 12px 22px 4px; font-weight: 600; font-size: 11px; }
+    .sp { padding: 8px 14px; }
+    .m-search { display: flex; align-items: center; gap: 6px; background: var(--surface-2); border-radius: 10px; padding: 8px 10px; color: var(--ink-3); }
+    .dark .m-search { background: #1c2621; color: #8aa396; }
+    .m-cats { display: flex; gap: 10px; overflow: hidden; padding: 4px 14px; }
+    .m-cats div { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; flex-shrink: 0; width: 50px; text-align: center; }
+    .m-cats span { width: 46px; height: 46px; border-radius: 50%; overflow: hidden; display: block; }
+    .m-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 6px 14px; }
+    .m-card { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff; }
+    .dark .m-card { border-color: #24302a; background: #161e1a; }
+    .m-card .img { aspect-ratio: 1/1; }
+    .m-card .t { padding: 6px 8px 8px; }
+    .m-card .t b { display: block; font-size: 10.5px; line-height: 1.25; height: 26px; overflow: hidden; }
+    .tabbar { margin-top: auto; display: flex; justify-content: space-around; border-top: 1px solid var(--line); padding: 8px 0 16px; font-size: 9.5px; color: var(--ink-3); }
+    .dark .tabbar { border-color: #24302a; }
+    .tabbar div { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .tabbar .on { color: var(--forest-700); font-weight: 700; }
+    .dark .tabbar .on { color: #7fc49a; }
+    .m-btn { display: flex; align-items: center; justify-content: center; gap: 6px; background: var(--forest-700); color: #fff; border-radius: 12px; height: 42px; font-weight: 700; font-size: 12.5px; }
+    .m-banner { margin: 6px 14px; border-radius: 14px; padding: 12px; color: #fff; background: linear-gradient(120deg, #7a3d12, #d99a1b); }
+    .push { position: absolute; top: 40px; left: 10px; right: 10px; background: rgba(250,250,248,.97); border-radius: 16px; padding: 10px 12px; box-shadow: 0 10px 30px -8px rgba(0,0,0,.35); display: flex; gap: 10px; z-index: 4; animation: drop 3.6s ease infinite; }
+    .push .ic { width: 30px; height: 30px; border-radius: 8px; background: var(--forest-700); display: grid; place-items: center; flex-shrink: 0; }
+    @keyframes drop { 0%, 8% { transform: translateY(-120%); opacity: 0; } 16%, 80% { transform: none; opacity: 1; } 92%, 100% { transform: translateY(-120%); opacity: 0; } }
+    .row-i { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .dark .row-i { border-color: #24302a; }
+    .row-i .th { width: 40px; height: 40px; border-radius: 10px; overflow: hidden; flex-shrink: 0; }
+    .upi { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .upi div { border: 1px solid var(--line-strong); border-radius: 12px; padding: 10px 4px; text-align: center; font-weight: 700; font-size: 10.5px; }
+    .upi div.sel { border-color: var(--forest-600); background: var(--leaf-50); }
+    .upi i { display: block; width: 26px; height: 26px; border-radius: 8px; margin: 0 auto 5px; }
+    .vtl { position: relative; padding-left: 18px; }
+    .vtl div { position: relative; padding-bottom: 14px; }
+    .vtl div::before { content: ""; position: absolute; left: -18px; top: 3px; width: 10px; height: 10px; border-radius: 50%; background: #fff; border: 2px solid var(--line-strong); }
+    .vtl div::after { content: ""; position: absolute; left: -13px; top: 15px; bottom: -1px; width: 2px; background: var(--line-strong); }
+    .vtl div:last-child::after { display: none; }
+    .vtl div.on::before { background: var(--forest-600); border-color: var(--forest-600); }
+    .vtl div.on::after { background: var(--forest-600); }
+    .fp { width: 86px; height: 86px; border-radius: 50%; border: 2px solid var(--leaf-400); display: grid; place-items: center; color: var(--forest-700); margin: 0 auto; animation: pulse 2s ease infinite; }
+    @keyframes pulse { 50% { box-shadow: 0 0 0 12px rgba(95,167,124,.18); } }
+    .dots { display: flex; gap: 5px; justify-content: center; }
+    .dots i { width: 6px; height: 6px; border-radius: 3px; background: var(--line-strong); }
+    .dots i.on { width: 18px; background: var(--forest-700); }
+    .feat-table td:first-child { font-weight: 600; white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <div class="proto-ribbon"><div class="container">
+    <span><span class="dot-live"></span><strong>Reference Prototype v0.1</strong> · Mobile App (Android & iOS) — screen concepts</span>
+    <nav><a href="index.html">Presentation</a><a href="overview.html">Project Blueprint</a><a href="home.html">Customer Website</a><a href="admin.html">Admin Panel</a><a href="mobile-app.html" class="active">Mobile App</a></nav>
+  </div></div>
+
+  <section class="hero"><div class="container">
+    <div>
+      <span class="eyebrow" style="color:#a9d3b8">Mobile Application · Android & iOS</span>
+      <h1>The nursery in your pocket</h1>
+      <p>One React Native codebase for Android and iOS, sharing the same backend APIs as the website. Same catalogue, cart and orders — plus push notifications, biometric login, offline browsing and a Plant Care Companion.</p>
+      <div class="flex wrap" style="margin-top:20px;gap:10px">
+        <span class="btn btn-light" style="cursor:default">Google Play Store</span>
+        <span class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.4);cursor:default">Apple App Store</span>
+      </div>
+      <p class="subtle" style="color:#a9d3b8;margin-top:12px">Store listings published in Phase 7 (Week 16)</p>
+    </div>
+    <div style="justify-self:center" id="heroPhone"></div>
+  </div></section>
+
+  <main class="section">
+    <div class="container">
+      <div class="section-head"><div><span class="eyebrow">Key screens</span><h2>App screen concepts</h2></div><p class="muted">Lo-fi to hi-fi direction for client review. Final screens are designed in Phase 2 (UI/UX) and approved before development.</p></div>
+      <div class="phones" id="phones"></div>
+
+      <section class="section" style="padding-bottom:0">
+        <div class="section-head"><div><span class="eyebrow">Feature coverage</span><h2>Mobile features in scope</h2></div></div>
+        <div class="card table-wrap"><table class="tbl feat-table">
+          <thead><tr><th>Area</th><th>Features</th><th>Technology</th></tr></thead>
+          <tbody>
+            <tr><td>5.1 Core shopping</td><td>Image-rich catalogue, search & filters, product details with care tips & reviews, cart, coupons, checkout</td><td>React Native · shared REST API</td></tr>
+            <tr><td>Payments</td><td>UPI intent (Google Pay, PhonePe, Paytm), cards, net banking, COD</td><td>Razorpay React Native SDK</td></tr>
+            <tr><td>5.2 Push notifications</td><td>Order status (confirmed, dispatched, out for delivery), flash sales, back-in-stock alerts, watering reminders</td><td>Firebase Cloud Messaging</td></tr>
+            <tr><td>5.3 UX enhancements</td><td>Onboarding, biometric login (fingerprint / Face ID), offline cached catalogue, dark mode</td><td>Keychain / Keystore · local cache · system theme</td></tr>
+            <tr><td>5.4 Plant Care Companion</td><td>“My Plants” from past orders, watering schedule reminders, seasonal gardening calendar, care articles</td><td>Local notifications · Blog API</td></tr>
+            <tr><td>5.5 Location features</td><td>Detect location for delivery check, ETA by pin code, store locator & directions</td><td>Device GPS · Google Maps API</td></tr>
+          </tbody></table></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    const P = (id) => byId(id) || PRODUCTS[0];
+    const sbar = (dark) => `<div class="notch"></div><div class="sbar"><span>9:41</span><span>●●● ▮</span></div>`;
+    const tabs = (on = 0) => `<div class="tabbar">${[["leaf", "Home"], ["search", "Shop"], ["sprout", "My Plants"], ["cart", "Cart"], ["user", "Account"]].map(([i, l], k) => `<div class="${k === on ? "on" : ""}">${icon(i, 18)}${l}</div>`).join("")}</div>`;
+    const mcard = (p) => `<div class="m-card"><div class="img">${plantArt(p.art)}</div><div class="t"><b>${esc(p.name)}</b><span style="font-weight:700">${inr(p.price)}</span> <span style="text-decoration:line-through;color:var(--ink-3);font-size:10px">${inr(p.mrp)}</span></div></div>`;
+    const home = (dark) => `${sbar()}
+      <div class="sp flex between" style="padding-top:4px"><div><div style="font-size:10px;color:${dark ? "#8aa396" : "var(--ink-3)"}">Deliver to</div><b class="flex" style="gap:4px">${icon("pin", 13)} Gandhi Nagar, 520003</b></div><span>${icon("bell", 18)}</span></div>
+      <div class="sp" style="padding-top:2px"><div class="m-search">${icon("search", 14)} Search plants, seeds…</div></div>
+      <div class="m-banner"><div style="font-size:9.5px;opacity:.85;letter-spacing:.08em;text-transform:uppercase">Diwali Green Festival</div><b style="font-size:14px;font-family:var(--font-display);font-weight:500">20% off gift packs</b><div style="font-size:10px;margin-top:2px">Code DIWALI20 · ends Nov 10</div></div>
+      <div class="m-cats">${CATEGORIES.map((c) => `<div><span>${plantArt(c.art)}</span>${c.name.split(" ")[0]}</div>`).join("")}</div>
+      <div class="sp flex between" style="padding-bottom:0"><b style="font-size:13px">Best-sellers</b><span style="color:${dark ? "#7fc49a" : "var(--forest-700)"};font-weight:600;font-size:11px">See all</span></div>
+      <div class="m-grid">${[103, 101, 301, 105].map((i) => mcard(P(i))).join("")}</div>${tabs(0)}`;
+
+    const screens = [
+      ["Onboarding", "Smooth first-time welcome with 3 swipeable intro screens", `${sbar()}
+        <div style="flex:1;display:flex;flex-direction:column;padding:10px 20px 24px">
+          <div style="flex:1;display:grid;place-items:center"><div style="width:200px;height:200px;border-radius:50%;overflow:hidden">${plantArt({ kind: "flower", f: "#ec5b8a", bg: "#e7f2ea", pot: "#b9572f" })}</div></div>
+          <div class="dots" style="margin-bottom:16px"><i class="on"></i><i></i><i></i></div>
+          <b style="font-family:var(--font-display);font-size:22px;font-weight:500;line-height:1.2;text-align:center">Grow happiness at home</b>
+          <p style="text-align:center;color:var(--ink-2);margin:8px 0 18px">Healthy plants from our nursery, delivered to your door with a care guide.</p>
+          <div class="m-btn">Get Started</div><div style="text-align:center;margin-top:10px;font-weight:600;color:var(--forest-700)">I already have an account</div></div>`],
+      ["Home", "Location-aware home with festival banner, categories and best-sellers", home(false)],
+      ["Product details", "Gallery, price, care tags, reviews and add to cart", (() => { const p = P(103); return `${sbar()}
+        <div style="aspect-ratio:1/0.85;position:relative">${plantArt(p.art, 1)}<div style="position:absolute;top:8px;left:10px;right:10px;display:flex;justify-content:space-between"><span style="background:#fff;border-radius:50%;width:30px;height:30px;display:grid;place-items:center">←</span><span style="background:#fff;border-radius:50%;width:30px;height:30px;display:grid;place-items:center;color:var(--terracotta)">${icon("heart", 15)}</span></div></div>
+        <div class="sp"><div style="font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.08em;font-weight:700">Flowering Plants</div>
+        <b style="font-size:15px;font-family:var(--font-display);font-weight:500">${p.name}</b>
+        <div><span class="stars">★★★★★</span> ${p.rating} · ${p.reviews} reviews</div>
+        <div style="margin:6px 0"><b style="font-size:17px">${inr(p.price)}</b> <span style="text-decoration:line-through;color:var(--ink-3)">${inr(p.mrp)}</span> <span style="color:var(--ok);font-weight:700">${pctOff(p)}% off</span></div>
+        <div class="flex" style="gap:6px;flex-wrap:wrap;margin-bottom:8px"><span class="tag tag-green">${icon("sun", 11)} Full sun</span><span class="tag tag-green">${icon("drop", 11)} Daily water</span><span class="tag tag-green">Outdoor</span></div>
+        <p style="color:var(--ink-2);margin:0;font-size:11px">${p.desc}</p></div>
+        <div class="sp" style="margin-top:auto;padding-bottom:18px;display:flex;gap:8px"><div class="m-btn" style="flex:1;background:#fff;color:var(--forest-700);border:1.5px solid var(--forest-700)">Add to Cart</div><div class="m-btn" style="flex:1;background:var(--terracotta)">Buy Now</div></div>`; })()],
+      ["UPI checkout", "One-tap UPI intent to Google Pay, PhonePe or Paytm", `${sbar()}
+        <div class="sp"><b style="font-size:16px;font-family:var(--font-display);font-weight:500">Payment</b>
+        <div style="background:var(--leaf-50);border-radius:12px;padding:10px;margin:10px 0;display:flex;justify-content:space-between"><span>Total payable</span><b>${inr(677)}</b></div>
+        <div style="font-weight:700;margin:12px 0 8px">Pay using UPI</div>
+        <div class="upi"><div class="sel"><i style="background:linear-gradient(135deg,#4285f4,#34a853)"></i>Google Pay</div><div><i style="background:#5f259f"></i>PhonePe</div><div><i style="background:#00baf2"></i>Paytm</div></div>
+        <div style="font-weight:700;margin:14px 0 8px">Other options</div>
+        ${[["card", "Debit / Credit Card"], ["bank", "Net Banking"], ["cash", "Cash on Delivery"]].map(([i, l]) => `<div class="row-i">${icon(i, 18)}<span style="flex:1">${l}</span>›</div>`).join("")}</div>
+        <div class="sp" style="margin-top:auto;padding-bottom:18px"><div class="m-btn">${icon("lock", 14)} Pay ${inr(677)} with Google Pay</div><div style="text-align:center;font-size:10px;color:var(--ink-3);margin-top:6px">Secured by Razorpay</div></div>`],
+      ["Order tracking + push", "Real-time status with push notifications at every step", `${sbar()}
+        <div class="push"><span class="ic">${icon("leaf", 16)}</span><div style="color:var(--ink)"><b style="font-size:11px">Sri Venkateswara Nursery · now</b><div style="font-size:11px">🚚 Your order SVN-10482 is out for delivery! Arriving by 12 PM.</div></div></div>
+        <div class="sp" style="margin-top:6px"><b style="font-size:16px;font-family:var(--font-display);font-weight:500">Order SVN-10482</b><div style="color:var(--ink-3)">3 items · ${inr(677)} · UPI</div>
+        <div style="border-radius:12px;overflow:hidden;height:110px;margin:12px 0" class="map-ph"><div class="road1"></div><div class="road2"></div><div class="pin" style="color:var(--forest-700)">${icon("truck", 26, 2)}</div></div>
+        <div class="vtl">${[["Order placed", "Oct 23, 9:41 AM", 1], ["Confirmed by nursery", "Oct 23, 10:05 AM", 1], ["Packed & dispatched", "Oct 24, 8:10 AM", 1], ["Out for delivery", "Oct 24, 9:30 AM", 1], ["Delivered", "Expected by 12 PM", 0]].map(([t, d, on]) => `<div class="${on ? "on" : ""}"><b style="font-size:11.5px">${t}</b><div style="color:var(--ink-3);font-size:10px">${d}</div></div>`).join("")}</div></div>${tabs(4)}`],
+      ["Plant Care Companion", "My Plants, watering reminders and a seasonal calendar", `${sbar()}
+        <div class="sp"><b style="font-size:16px;font-family:var(--font-display);font-weight:500">My Plants</b><div style="color:var(--ink-3)">Added automatically from your orders</div>
+        ${[[103, "Water today", "var(--terracotta)"], [101, "Water tomorrow", "var(--ink-3)"], [301, "Fertilise in 5 days", "var(--ink-3)"]].map(([id, t, c]) => `<div class="row-i"><span class="th">${plantArt(P(id).art)}</span><div style="flex:1"><b style="font-size:11.5px">${P(id).name.split("(")[0]}</b><div style="color:${c};font-weight:600;font-size:10.5px">${icon("drop", 11)} ${t}</div></div><span style="border:1.5px solid var(--forest-700);color:var(--forest-700);border-radius:8px;padding:3px 8px;font-weight:700;font-size:10px">Done</span></div>`).join("")}
+        <div style="background:var(--marigold-100);border-radius:12px;padding:10px;margin-top:12px"><b style="font-size:11.5px">${icon("calendar", 12)} This month · October</b><div style="font-size:10.5px;color:var(--ink-2);margin-top:3px">Prune roses after the monsoon · Sow petunia & marigold for winter blooms · Reduce watering for adeniums.</div></div>
+        <div style="background:var(--leaf-50);border-radius:12px;padding:10px;margin-top:8px"><b style="font-size:11.5px">Tip of the day</b><div style="font-size:10.5px;color:var(--ink-2);margin-top:3px">Deadhead your mogra flowers to encourage new buds.</div></div></div>${tabs(2)}`],
+      ["Biometric login", "Fingerprint / Face ID for returning customers", `${sbar()}
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:20px;text-align:center">
+          <div class="brand" style="justify-content:center;margin-bottom:28px">${BRAND_MARK}</div>
+          <b style="font-family:var(--font-display);font-size:20px;font-weight:500">Welcome back, Lakshmi</b>
+          <p style="color:var(--ink-2);margin:6px 0 30px">Touch the sensor to log in securely</p>
+          <div class="fp">${icon("fingerprint", 44, 1.6)}</div>
+          <p style="color:var(--ink-3);margin-top:30px">or <b style="color:var(--forest-700)">log in with OTP</b></p></div>`],
+      ["Dark mode", "Follows system theme for comfortable night browsing", `<div class="scr dark" style="border-radius:0">${home(true)}</div>`],
+      ["Delivery & store locator", "Auto-detect location, check pin code, get directions", `${sbar()}
+        <div class="map-ph" style="height:230px;border-radius:0;border:0;min-height:0"><div class="road1"></div><div class="road2"></div><div class="pin">${icon("map", 34, 2)}</div>
+          <div style="position:absolute;left:30%;top:62%;width:14px;height:14px;border-radius:50%;background:#2457a6;box-shadow:0 0 0 6px rgba(36,87,166,.2)"></div></div>
+        <div class="sp"><div style="background:var(--ok-bg);color:var(--ok);border-radius:10px;padding:8px 10px;font-weight:700;display:flex;gap:6px;align-items:center">${icon("check", 14, 2.4)} Delivery available at 520003</div>
+        <div class="row-i">${icon("truck", 18)}<div><b style="font-size:11.5px">Next-day delivery</b><div style="color:var(--ink-3);font-size:10.5px">Order by 6 PM · Free above ₹999</div></div></div>
+        <div class="row-i">${icon("map", 18)}<div><b style="font-size:11.5px">Sri Venkateswara Nursery</b><div style="color:var(--ink-3);font-size:10.5px">4.2 km away · Open till 7:30 PM</div></div></div></div>
+        <div class="sp" style="margin-top:auto;padding-bottom:18px"><div class="m-btn">${icon("map", 14)} Get Directions</div></div>`],
+    ];
+
+    document.getElementById("phones").innerHTML = screens.map(([t, d, html], i) => `<div class="ph-wrap"><div class="phone"><div class="scr ${t === "Dark mode" ? "dark" : ""}">${t === "Dark mode" ? home(true) : html}</div></div><div class="ph-cap"><b>${i + 1}. ${t}</b><span>${d}</span></div></div>`).join("");
+    document.getElementById("heroPhone").innerHTML = `<div class="phone"><div class="scr">${home(false)}</div></div>`;
+    document.querySelector(".hero .btn-light").innerHTML = icon("download", 18) + " Google Play Store";
+
+    // ?embed=N renders a single screen edge-to-edge (used inside phone frames on the presentation page)
+    if (qs("embed") !== null) {
+      const [t, , html] = screens[+qs("embed")] || screens[1];
+      document.body.innerHTML = `<div class="scr ${t === "Dark mode" ? "dark" : ""}" style="border-radius:0;height:100vh">${t === "Dark mode" ? home(true) : html}</div>`;
+      document.body.style.background = "#fff";
+    }
+  </script>
+</body>
+</html>

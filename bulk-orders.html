@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bulk & Event Orders — Sri Venkateswara Nursery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <section class="hero"><div class="container" style="grid-template-columns:1fr;padding-top:52px;padding-bottom:52px">
+    <div>
+      <span class="eyebrow" style="color:#a9d3b8">Bulk & Event Orders</span>
+      <h1 style="max-width:760px">Plants and flowers for every function and occasion</h1>
+      <p>Weddings, housewarmings, corporate events, temple functions and plantation drives — get special bulk pricing, delivery on your function date and help with arrangements.</p>
+      <div class="flex wrap" style="margin-top:20px"><a href="#quote" class="btn btn-light">Request a Quote</a><a href="https://wa.me/919000000000" target="_blank" rel="noopener" class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.4)">WhatsApp our event team</a></div>
+    </div>
+  </div></section>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <div class="section-head"><div><span class="eyebrow">Occasions we serve</span><h2>Choose your event type</h2></div></div>
+        <div class="grid grid-3" id="events"></div>
+      </div>
+    </section>
+
+    <section class="section" style="background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+      <div class="container">
+        <div class="section-head"><div><span class="eyebrow">Wholesale pricing</span><h2>The more you order, the more you save</h2></div><p class="muted">Indicative bulk discounts on regular prices. Final pricing is confirmed in your personalised quote.</p></div>
+        <div class="grid grid-3" id="tiers"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head"><div><span class="eyebrow">How it works</span><h2>From enquiry to function day</h2></div></div>
+        <div class="process">
+          <div class="card"><b>Submit your requirement</b><p class="muted" style="margin:6px 0 0;font-size:.9rem">Fill the quote form with event date, quantities and any décor needs.</p></div>
+          <div class="card"><b>Receive a quote in 24 hours</b><p class="muted" style="margin:6px 0 0;font-size:.9rem">Our team reviews and sends a detailed quote via WhatsApp & email.</p></div>
+          <div class="card"><b>Confirm & pay advance</b><p class="muted" style="margin:6px 0 0;font-size:.9rem">Accept the quote online and pay a booking advance to reserve stock.</p></div>
+          <div class="card"><b>Delivered on your date</b><p class="muted" style="margin:6px 0 0;font-size:.9rem">Scheduled delivery — with on-site arrangement if requested.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Request-a-Quote form -->
+    <section class="section" id="quote" style="padding-top:20px">
+      <div class="container" style="display:grid;grid-template-columns:1fr 1.4fr;gap:32px" id="quoteGrid">
+        <div>
+          <span class="eyebrow">Request a Quote</span>
+          <h2>Tell us about your event</h2>
+          <p class="muted">Share as much detail as you can — our event team will get back within one working day with a personalised quote.</p>
+          <div class="grid" style="gap:14px;margin-top:20px">
+            <div class="feature"><span class="ico" id="i1"></span><div><b>Custom gift packs</b><p>Return gifts with personalised message cards and branding.</p></div></div>
+            <div class="feature"><span class="ico" id="i2"></span><div><b>Scheduled delivery</b><p>Delivered on the exact function date and time slot.</p></div></div>
+            <div class="feature"><span class="ico" id="i3"></span><div><b>Decoration support</b><p>Mandap, stage and entrance arrangements on request.</p></div></div>
+          </div>
+        </div>
+        <form class="card card-pad" id="qForm">
+          <div class="form-row">
+            <div class="field"><label>Event type</label><select class="input" name="event" id="evSel" required></select></div>
+            <div class="field"><label>Function date</label><input class="input" type="date" name="date" required id="evDate"></div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label>Your name / organisation</label><input class="input" name="name" required></div>
+            <div class="field"><label>Mobile (WhatsApp)</label><input class="input" name="phone" required pattern="[6-9][0-9]{9}" placeholder="10-digit number"></div>
+          </div>
+          <div class="field"><label>Items required</label>
+            <div class="flex wrap" style="gap:8px" id="itemChips"></div></div>
+          <div class="form-row">
+            <div class="field"><label>Approximate quantity</label><input class="input" type="number" min="25" name="qty" required placeholder="Minimum 25 units"></div>
+            <div class="field"><label>Budget range</label><select class="input" name="budget"><option>Under ₹10,000</option><option>₹10,000 – 25,000</option><option>₹25,000 – 60,000</option><option>₹60,000+</option><option>Not sure yet</option></select></div>
+          </div>
+          <div class="field"><label>Delivery location</label><input class="input" name="location" required placeholder="Venue address / area & pin code"></div>
+          <label class="check"><input type="checkbox" name="decor"> I need decoration / arrangement support at the venue</label>
+          <label class="check"><input type="checkbox" name="branding"> Custom message cards or branding on gift packs</label>
+          <div class="field" style="margin-top:10px"><label>Additional details</label><textarea class="input" name="notes" placeholder="Colour theme, plant preferences, setup time…"></textarea></div>
+          <div class="field"><label>Reference photos (optional)</label><input type="file" class="input" multiple accept="image/*"></div>
+          <button class="btn btn-primary btn-block">Submit Quote Request</button>
+          <p class="subtle" style="text-align:center;margin:10px 0 0">Your request goes directly to the nursery's admin dashboard for review.</p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    renderLayout("bulk");
+    document.querySelector('.hero a[href^="https://wa.me"]').innerHTML = icon("chat", 18) + " WhatsApp our event team";
+    document.getElementById("i1").innerHTML = icon("gift"); document.getElementById("i2").innerHTML = icon("calendar"); document.getElementById("i3").innerHTML = icon("sprout");
+    const evIcons = { wedding: "heart", housewarming: "leaf", corporate: "users", temple: "sun", school: "sprout", other: "gift" };
+    document.getElementById("events").innerHTML = EVENT_TYPES.map((e) => `<a href="#quote" class="card card-pad" data-ev="${e.id}"><div class="feature"><span class="ico">${icon(evIcons[e.id])}</span><div><b>${e.name}</b><p>${e.desc}</p></div></div></a>`).join("");
+    document.getElementById("tiers").innerHTML = BULK_TIERS.map((t, i) => `<div class="card tier" style="${i === 1 ? "border-color:var(--leaf-400);box-shadow:var(--shadow)" : ""}">${i === 1 ? '<span class="tag tag-green">Most popular</span>' : '<span class="tag tag-gray">Tier ' + (i + 1) + "</span>"}<div class="big">${t.off}</div><b>off regular price</b><p class="muted" style="margin:6px 0 0">${t.range}</p></div>`).join("");
+    document.getElementById("evSel").innerHTML = EVENT_TYPES.map((e) => `<option value="${e.id}">${e.name}</option>`).join("");
+    document.querySelectorAll("[data-ev]").forEach((a) => a.addEventListener("click", () => (document.getElementById("evSel").value = a.dataset.ev)));
+    const min = new Date(); min.setDate(min.getDate() + 3); document.getElementById("evDate").min = min.toISOString().slice(0, 10);
+    document.getElementById("itemChips").innerHTML = ["Marigold pots", "Jasmine / Mogra", "Rose plants", "Tulsi", "Saplings (return gifts)", "Indoor plants", "Gift packs", "Loose flowers"].map((x) => `<button type="button" class="chip">${x}</button>`).join("");
+    document.getElementById("itemChips").onclick = (e) => { const c = e.target.closest(".chip"); if (c) c.classList.toggle("active"); };
+    document.getElementById("qForm").onsubmit = (e) => {
+      e.preventDefault();
+      const f = Object.fromEntries(new FormData(e.target));
+      const ref = "BQ-" + (2032 + Math.floor(Math.random() * 50));
+      e.target.innerHTML = `<div style="text-align:center;padding:24px 8px">
+        <div style="width:64px;height:64px;border-radius:50%;background:var(--ok-bg);color:var(--ok);display:grid;place-items:center;margin:0 auto 14px">${icon("check", 30, 2.4)}</div>
+        <h3 style="font-size:1.5rem">Quote request received</h3>
+        <p class="muted">Reference <b>${ref}</b> · ${EVENT_TYPES.find((x) => x.id === f.event).name} on ${fmtDate(f.date)} · ~${f.qty} units</p>
+        <div class="notice green" style="text-align:left">${icon("bell")} <span>Our event team will send your quote on WhatsApp (+91 ${esc(f.phone)}) within one working day. You can accept the quote and pay the booking advance online.</span></div>
+        <a href="home.html" class="btn btn-outline" style="margin-top:16px">Back to home</a></div>`;
+    };
+  </script>
+  <style>@media (max-width:860px){#quoteGrid{grid-template-columns:1fr!important}}</style>
+</body>
+</html>

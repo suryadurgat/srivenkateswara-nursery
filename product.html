@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Product — Sri Venkateswara Nursery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <main class="section" style="padding-top:28px">
+    <div class="container" id="pdp"></div>
+  </main>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    const p = byId(qs("id")) || PRODUCTS[0];
+    renderLayout(p.cat);
+    document.title = `${p.name} — Sri Venkateswara Nursery`;
+
+    const care = p.care || null;
+    const dist = [0.72, 0.18, 0.06, 0.03, 0.01];
+    const wished = () => Store.wish().includes(p.id);
+    const stockHtml = p.stock === 0 ? `<span class="status st-cancelled">Out of stock</span>` : p.stock <= 10 ? `<span class="status st-dispatched">Only ${p.stock} left — order soon</span>` : `<span class="status st-delivered">In stock</span>`;
+
+    document.getElementById("pdp").innerHTML = `
+      <div class="crumbs"><a href="home.html">Home</a> / <a href="shop.html?cat=${p.cat}">${catName(p.cat)}</a> / ${esc(p.name)}</div>
+      <div class="pdp">
+        <!-- 4.3 Image gallery -->
+        <div>
+          <div class="gallery-main" id="main">${plantArt(p.art, 0)}</div>
+          <div class="thumbs" id="thumbs">${[0, 1, 2, 3].map((v) => `<button class="${v ? "" : "active"}" data-v="${v}" aria-label="View image ${v + 1}">${plantArt(p.art, v)}</button>`).join("")}</div>
+          <p class="subtle" style="margin-top:10px">Illustrations shown as placeholders — final site uses the nursery's actual product photography.</p>
+        </div>
+
+        <div>
+          <span class="p-cat">${catName(p.cat)}</span>
+          <h1 style="font-size:clamp(1.7rem,3vw,2.4rem);margin-top:6px">${esc(p.name)}</h1>
+          <div class="p-meta" style="font-size:.9rem"><span class="stars">${starStr(p.rating)}</span><b style="color:var(--ink)">${p.rating}</b><a href="#reviews" style="text-decoration:underline">${p.reviews} reviews</a></div>
+          <div class="pdp-price"><span class="price">${inr(p.price)}</span><span class="mrp">MRP ${inr(p.mrp)}</span><span class="off">Save ${pctOff(p)}%</span></div>
+          <p class="subtle" style="margin-top:-8px">Inclusive of all taxes</p>
+          <div style="margin:10px 0 18px">${stockHtml}</div>
+          <p class="muted">${esc(p.desc)}</p>
+
+          <div class="spec-list">
+            ${p.sun !== "NA" ? `<div><b>Sunlight</b>${p.sun}</div>` : ""}
+            <div><b>Placement</b>${p.type}</div>
+            ${p.pot !== "NA" ? `<div><b>Pot size</b>${p.pot}</div>` : ""}
+            <div><b>Ideal for</b>${p.occasion.map((o) => o[0].toUpperCase() + o.slice(1)).join(", ")}</div>
+          </div>
+
+          <div class="flex wrap" style="gap:12px">
+            <div class="qty"><button id="dec" aria-label="Decrease">−</button><input id="qty" value="1" inputmode="numeric" aria-label="Quantity"><button id="inc" aria-label="Increase">+</button></div>
+            <button class="btn btn-primary" id="addBtn" style="flex:1" ${p.stock ? "" : "disabled"}>${icon("cart", 18)} Add to Cart</button>
+            <button class="btn btn-accent" id="buyBtn" style="flex:1" ${p.stock ? "" : "disabled"}>Buy Now</button>
+            <button class="btn btn-outline" id="wishBtn" aria-label="Wishlist" style="padding:0 14px">${icon("heart", 18)}</button>
+          </div>
+          ${p.stock ? "" : `<div class="notice gold" style="margin-top:14px">${icon("bell")} <span>Add to wishlist to get a <b>back-in-stock alert</b> by push notification and email.</span></div>`}
+
+          <div class="card card-pad" style="margin-top:22px;padding:18px">
+            <b class="flex" style="gap:8px">${icon("truck", 18)} Check delivery</b>
+            <div class="pin-check"><input class="input" id="pin" maxlength="6" placeholder="Enter pin code" inputmode="numeric"><button class="btn btn-outline btn-sm" id="pinBtn" style="height:44px">Check</button></div>
+            <div id="pinMsg" class="subtle" style="margin-top:8px">Free delivery on orders above ${inr(STORE.freeShippingAbove)} · Cash on Delivery available</div>
+          </div>
+          <div class="grid grid-3" style="margin-top:16px;gap:10px;font-size:.82rem">
+            <div class="flex" style="gap:8px">${icon("shield", 18)} Secure payment</div>
+            <div class="flex" style="gap:8px">${icon("sprout", 18)} Healthy plant guarantee</div>
+            <div class="flex" style="gap:8px">${icon("refresh", 18)} 7-day replacement</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs: description / care / tips / reviews -->
+      <section class="section" style="padding-bottom:20px">
+        <div class="tabs" role="tablist">
+          <button class="active" data-tab="care">Care Instructions</button>
+          <button data-tab="tips">Growing Tips</button>
+          <button data-tab="reviews" id="reviews">Ratings & Reviews</button>
+        </div>
+        <div data-pane="care">
+          ${care ? `<div class="care-grid">
+            <div class="care-item">${icon("drop")}<b>Watering</b><p>${care.water}</p></div>
+            <div class="care-item">${icon("sun")}<b>Sunlight</b><p>${care.sun}</p></div>
+            <div class="care-item">${icon("layers")}<b>Soil</b><p>${care.soil}</p></div>
+            <div class="care-item">${icon("sprout")}<b>Fertiliser</b><p>${care.feed}</p></div></div>`
+            : `<p class="muted">Usage instructions are printed on the product label. For help choosing the right product, <a href="contact.html" style="text-decoration:underline">contact our team</a>.</p>`}
+        </div>
+        <div data-pane="tips" class="hide">
+          ${p.tips.length ? `<ul class="muted" style="padding-left:20px;margin:0">${p.tips.map((t) => `<li style="margin-bottom:8px">${t}</li>`).join("")}</ul>` : `<p class="muted">No additional tips for this product.</p>`}
+          <a href="care-tips.html" class="btn btn-outline btn-sm" style="margin-top:12px">More plant care guides</a>
+        </div>
+        <div data-pane="reviews" class="hide">
+          <div style="display:grid;grid-template-columns:260px 1fr;gap:32px" class="rev-grid">
+            <div>
+              <div style="font-family:var(--font-display);font-size:3rem;line-height:1">${p.rating}</div>
+              <div class="stars" style="font-size:1.1rem">${starStr(p.rating)}</div>
+              <p class="subtle">Based on ${p.reviews} verified ratings</p>
+              <div class="rating-bars">${dist.map((d, i) => `<div class="row"><span>${5 - i} ★</span><div class="bar"><i style="width:${d * 100}%"></i></div><span class="subtle">${Math.round(d * p.reviews)}</span></div>`).join("")}</div>
+              <button class="btn btn-outline btn-sm" style="margin-top:16px" id="writeRev">Write a review</button>
+            </div>
+            <div id="revList">${REVIEWS.slice(0, 3).map((r) => `<div class="review"><div class="flex between"><b>${r.name}</b><span class="subtle">${fmtDate(r.date)}</span></div><div class="stars">${starStr(r.rating)}</div><p class="muted" style="margin:6px 0 0">${r.text}</p><span class="subtle">${r.city} · Verified buyer</span></div>`).join("")}</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Related products -->
+      <section class="section" style="padding-top:20px">
+        <div class="section-head"><div><span class="eyebrow">You may also like</span><h2>Customers also bought</h2></div></div>
+        <div class="products">${PRODUCTS.filter((x) => x.id !== p.id && (x.cat === p.cat || x.occasion.some((o) => p.occasion.includes(o)))).sort((a, b) => b.pop - a.pop).slice(0, 4).map(productCard).join("")}</div>
+      </section>`;
+
+    // Gallery
+    document.getElementById("thumbs").addEventListener("click", (e) => {
+      const b = e.target.closest("button"); if (!b) return;
+      document.querySelectorAll("#thumbs button").forEach((x) => x.classList.toggle("active", x === b));
+      document.getElementById("main").innerHTML = plantArt(p.art, +b.dataset.v);
+    });
+    // Quantity
+    const qty = document.getElementById("qty");
+    const clamp = (v) => Math.max(1, Math.min(+v || 1, p.stock || 1));
+    document.getElementById("dec").onclick = () => (qty.value = clamp(+qty.value - 1));
+    document.getElementById("inc").onclick = () => { if (+qty.value >= p.stock) toast(`Only ${p.stock} in stock`, "alert"); qty.value = clamp(+qty.value + 1); };
+    qty.onchange = () => (qty.value = clamp(qty.value));
+    document.getElementById("addBtn").onclick = () => Store.addToCart(p.id, +qty.value);
+    document.getElementById("buyBtn").onclick = () => { Store.addToCart(p.id, +qty.value); location.href = "cart.html"; };
+    const wb = document.getElementById("wishBtn");
+    const paintWish = () => { wb.style.color = wished() ? "var(--terracotta)" : ""; wb.querySelector("path").setAttribute("fill", wished() ? "currentColor" : "none"); };
+    wb.onclick = () => { Store.toggleWish(p.id); paintWish(); }; paintWish();
+    // Pin check
+    document.getElementById("pinBtn").onclick = () => {
+      const r = checkPin(document.getElementById("pin").value.trim());
+      const m = document.getElementById("pinMsg");
+      m.innerHTML = `<span style="color:${r.ok ? "var(--ok)" : "var(--crit)"};font-weight:600">${r.ok ? "✓" : "✕"} ${r.msg}</span>`;
+    };
+    // Tabs
+    document.querySelector(".tabs").addEventListener("click", (e) => {
+      const b = e.target.closest("button"); if (!b) return;
+      document.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("active", x === b));
+      document.querySelectorAll("[data-pane]").forEach((x) => x.classList.toggle("hide", x.dataset.pane !== b.dataset.tab));
+    });
+    if (location.hash === "#reviews") document.getElementById("reviews").click();
+    // Write a review
+    document.getElementById("writeRev").onclick = () => {
+      const m = openModal("Write a review", `
+        <p class="subtle">Only customers who purchased this item can post a review (verified buyer).</p>
+        <div class="field"><label>Your rating</label><div id="rStars" style="font-size:1.8rem;color:var(--marigold);cursor:pointer;letter-spacing:4px">☆☆☆☆☆</div></div>
+        <div class="field"><label for="rText">Your review</label><textarea class="input" id="rText" placeholder="How is the plant doing?"></textarea></div>
+        <div class="field"><label>Add photos (optional)</label><input type="file" class="input" accept="image/*"></div>`,
+        `<button class="btn btn-outline" data-close>Cancel</button><button class="btn btn-primary" id="rSubmit">Submit review</button>`);
+      let rating = 0;
+      m.querySelector("#rStars").onclick = (e) => {
+        const r = e.currentTarget.getBoundingClientRect();
+        rating = Math.min(5, Math.max(1, Math.ceil(((e.clientX - r.left) / Math.min(r.width, 150)) * 5)));
+        e.currentTarget.textContent = "★".repeat(rating) + "☆".repeat(5 - rating);
+      };
+      m.querySelector("#rSubmit").onclick = () => {
+        if (!rating) return toast("Please choose a star rating", "alert");
+        closeModal(); toast("Thanks! Your review is pending moderation.", "check");
+      };
+    };
+  </script>
+  <style>@media (max-width:860px){.rev-grid{grid-template-columns:1fr!important}}</style>
+</body>
+</html>

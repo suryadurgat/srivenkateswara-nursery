@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cart & Checkout — Sri Venkateswara Nursery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <main class="section" style="padding-top:32px">
+    <div class="container">
+      <div class="steps" id="steps">
+        <div class="step">Cart</div><div class="step">Delivery</div><div class="step">Payment</div><div class="step">Confirmation</div>
+      </div>
+      <div id="view"></div>
+    </div>
+  </main>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    renderLayout("");
+    const S = { step: 0, coupon: Store.get("coupon", null), addr: null, date: null, slot: "Morning (8 AM – 12 PM)", pay: "upi" };
+    const view = document.getElementById("view");
+
+    function paintSteps() {
+      document.querySelectorAll(".step").forEach((el, i) => { el.className = "step " + (i < S.step ? "done" : i === S.step ? "current" : ""); });
+    }
+    function summary(btnLabel, btnId) {
+      const t = cartTotals(S.coupon);
+      return `<aside class="card card-pad summary">
+        <h3>Order Summary</h3>
+        <div class="sum-row"><span>Items (${t.lines.reduce((s, l) => s + l.qty, 0)})</span><span>${inr(t.mrpTotal)}</span></div>
+        <div class="sum-row" style="color:var(--ok)"><span>Product discount</span><span>− ${inr(t.mrpTotal - t.subtotal)}</span></div>
+        ${t.discount ? `<div class="sum-row" style="color:var(--ok)"><span>Coupon (${t.coupon})</span><span>− ${inr(t.discount)}</span></div>` : ""}
+        <div class="sum-row"><span>Delivery</span><span>${t.delivery ? inr(t.delivery) : '<b style="color:var(--ok)">FREE</b>'}</span></div>
+        <div class="sum-row total"><span>Total</span><span>${inr(t.total)}</span></div>
+        ${t.subtotal < STORE.freeShippingAbove && !t.coupon?.includes("SHIP") ? `<p class="subtle" style="margin:8px 0 0">Add ${inr(STORE.freeShippingAbove - t.subtotal)} more for free delivery</p>` : ""}
+        ${S.step === 0 ? `<div class="divider"></div>
+          <label class="subtle" for="cpn" style="font-weight:600">Coupon code</label>
+          <div class="flex" style="margin-top:6px"><input class="input" id="cpn" placeholder="e.g. DIWALI20" value="${S.coupon || ""}" style="text-transform:uppercase"><button class="btn btn-outline btn-sm" id="applyCpn" style="height:44px">${S.coupon ? "Remove" : "Apply"}</button></div>
+          <div class="flex wrap" style="margin-top:8px;gap:6px">${Object.keys(COUPONS).map((c) => `<button class="tag tag-gold" data-cp="${c}" style="border:0;cursor:pointer">${c}</button>`).join("")}</div>` : ""}
+        ${btnLabel ? `<button class="btn btn-primary btn-block" id="${btnId}" style="margin-top:18px" ${t.lines.length ? "" : "disabled"}>${btnLabel}</button>` : ""}
+        <p class="subtle flex" style="margin:14px 0 0;gap:6px;justify-content:center">${icon("lock", 14)} Payments secured by Razorpay · PCI-DSS compliant</p>
+      </aside>`;
+    }
+
+    /* Step 1 — Cart */
+    function stepCart() {
+      const t = cartTotals(S.coupon);
+      if (!t.lines.length) {
+        view.innerHTML = `<div class="card empty-state">${icon("cart", 40)}<h2 style="margin-top:14px">Your cart is empty</h2><p>Explore our flowering plants, seeds and saplings.</p><a href="shop.html" class="btn btn-primary">Start shopping</a></div>`;
+        return;
+      }
+      view.innerHTML = `<div class="checkout"><section class="card card-pad">
+        <div class="flex between"><h2 style="margin:0;font-size:1.6rem">Shopping Cart</h2><a href="shop.html" class="btn btn-ghost btn-sm">+ Add more items</a></div>
+        ${t.lines.map((l) => `<div class="cart-line">
+          <a class="thumb" href="product.html?id=${l.p.id}">${plantArt(l.p.art)}</a>
+          <div><a href="product.html?id=${l.p.id}" class="p-name">${esc(l.p.name)}</a>
+            <div class="subtle">${catName(l.p.cat)} · ${inr(l.p.price)} each ${l.p.stock <= 10 ? `· <span class="stock-low">Only ${l.p.stock} left</span>` : ""}</div>
+            <div class="flex" style="margin-top:8px"><div class="qty" style="height:38px"><button data-dq="${l.id}" aria-label="Decrease">−</button><input value="${l.qty}" readonly aria-label="Quantity"><button data-iq="${l.id}" aria-label="Increase">+</button></div>
+            <button class="btn btn-ghost btn-sm" data-rm="${l.id}">${icon("trash", 16)} Remove</button></div></div>
+          <div style="text-align:right"><div class="price">${inr(l.p.price * l.qty)}</div><div class="mrp">${inr(l.p.mrp * l.qty)}</div></div>
+        </div>`).join("")}
+      </section>${summary("Proceed to Delivery", "next")}</div>`;
+      view.querySelectorAll("[data-dq]").forEach((b) => (b.onclick = () => { const l = Store.cart().find((x) => x.id == b.dataset.dq); Store.setQty(l.id, l.qty - 1); render(); }));
+      view.querySelectorAll("[data-iq]").forEach((b) => (b.onclick = () => { const l = Store.cart().find((x) => x.id == b.dataset.iq); if (l.qty >= byId(l.id).stock) toast("No more stock available", "alert"); Store.setQty(l.id, l.qty + 1); render(); }));
+      view.querySelectorAll("[data-rm]").forEach((b) => (b.onclick = () => { Store.remove(+b.dataset.rm); render(); }));
+      view.querySelectorAll("[data-cp]").forEach((b) => (b.onclick = () => { document.getElementById("cpn").value = b.dataset.cp; S.coupon = null; applyCoupon(); }));
+      document.getElementById("applyCpn").onclick = () => { if (S.coupon) { S.coupon = null; Store.set("coupon", null); render(); } else applyCoupon(); };
+      document.getElementById("next").onclick = () => go(1);
+    }
+    function applyCoupon() {
+      const code = document.getElementById("cpn").value.trim().toUpperCase();
+      const cp = COUPONS[code];
+      const sub = cartTotals().subtotal;
+      if (!cp) return toast("Invalid coupon code", "alert");
+      if (sub < cp.min) return toast(`${code} needs a minimum order of ${inr(cp.min)}`, "alert");
+      S.coupon = code; Store.set("coupon", code); toast(`Applied: ${cp.label}`, "tag"); render();
+    }
+
+    /* Step 2 — Delivery address, date, slot */
+    function stepDelivery() {
+      const user = Store.user();
+      const saved = user?.addresses || [];
+      const min = new Date(); min.setDate(min.getDate() + 1);
+      const max = new Date(); max.setDate(max.getDate() + 30);
+      const iso = (d) => d.toISOString().slice(0, 10);
+      S.date = S.date || iso(min);
+      view.innerHTML = `<div class="checkout"><section class="card card-pad">
+        <h2 style="font-size:1.6rem">Delivery details</h2>
+        ${user ? "" : `<div class="notice" style="margin-bottom:18px">${icon("user")} <span>Have an account? <a href="account.html?next=cart" style="text-decoration:underline;font-weight:600">Log in with OTP</a> to use saved addresses — or continue as a guest.</span></div>`}
+        ${saved.length ? `<h4 style="font-family:var(--font-body)">Saved addresses</h4>${saved.map((a, i) => `<label class="addr-card"><input type="radio" name="addr" value="${i}" ${i === 0 ? "checked" : ""}><div><b>${esc(a.label)} · ${esc(a.name)}</b><div class="subtle">${esc(a.line)}, ${esc(a.city)} – ${a.pin} · ${a.phone}</div></div></label>`).join("")}
+          <label class="addr-card"><input type="radio" name="addr" value="new"><div><b>+ Deliver to a new address</b></div></label>` : ""}
+        <form id="addrForm" class="${saved.length ? "hide" : ""}" style="margin-top:8px">
+          <div class="form-row"><div class="field"><label>Full name</label><input class="input" name="name" required value="${esc(user?.name || "")}"></div>
+          <div class="field"><label>Mobile number</label><input class="input" name="phone" required pattern="[6-9][0-9]{9}" placeholder="10-digit mobile" value="${esc(user?.phone || "")}"></div></div>
+          <div class="field"><label>House no., street, area</label><input class="input" name="line" required></div>
+          <div class="form-row"><div class="field"><label>City</label><input class="input" name="city" required></div>
+          <div class="field"><label>Pin code</label><input class="input" name="pin" required pattern="[0-9]{6}" maxlength="6"><span class="hint" id="pinHint"></span></div></div>
+          <div class="field"><label>Landmark (optional)</label><input class="input" name="landmark"></div>
+        </form>
+        <div class="divider"></div>
+        <h4 style="font-family:var(--font-body)">${icon("calendar", 18)} Choose delivery date</h4>
+        <div class="form-row"><div class="field"><input type="date" class="input" id="date" min="${iso(min)}" max="${iso(max)}" value="${S.date}"></div>
+        <div class="field"><span class="hint" style="padding-top:12px">Pre-book up to 30 days ahead — ideal for gifts and functions.</span></div></div>
+        <div class="slot-grid">${["Morning (8 AM – 12 PM)", "Afternoon (12 – 4 PM)", "Evening (4 – 8 PM)"].map((s) => `<label class="slot"><input type="radio" name="slot" value="${s}" ${s === S.slot ? "checked" : ""}>${s}</label>`).join("")}</div>
+        <div class="field" style="margin-top:14px"><label>Gift message (optional)</label><input class="input" id="gift" placeholder="Happy Diwali! With love…"></div>
+        <div class="flex between" style="margin-top:12px"><button class="btn btn-outline" id="back">← Back to cart</button></div>
+      </section>${summary("Continue to Payment", "next")}</div>`;
+      const form = document.getElementById("addrForm");
+      view.querySelectorAll("[name=addr]").forEach((r) => (r.onchange = () => form.classList.toggle("hide", r.value !== "new" || !r.checked)));
+      form.pin.oninput = () => { const v = form.pin.value; document.getElementById("pinHint").innerHTML = v.length === 6 ? `<span style="color:${checkPin(v).ok ? "var(--ok)" : "var(--crit)"}">${checkPin(v).msg}</span>` : ""; };
+      document.getElementById("back").onclick = () => go(0);
+      document.getElementById("next").onclick = () => {
+        const sel = view.querySelector("[name=addr]:checked");
+        if (sel && sel.value !== "new") S.addr = saved[+sel.value];
+        else {
+          if (!form.reportValidity()) return;
+          if (!checkPin(form.pin.value).ok) return toast("Delivery not available for this pin code", "alert");
+          S.addr = Object.fromEntries(new FormData(form));
+        }
+        S.date = document.getElementById("date").value;
+        S.slot = view.querySelector("[name=slot]:checked").value;
+        S.gift = document.getElementById("gift").value;
+        go(2);
+      };
+    }
+
+    /* Step 3 — Payment */
+    function stepPayment() {
+      const t = cartTotals(S.coupon);
+      const opts = [
+        ["upi", "phoneDevice", "UPI", "Google Pay · PhonePe · Paytm · BHIM · any UPI ID"],
+        ["card", "card", "Debit / Credit Card", "Visa · Mastercard · RuPay"],
+        ["netbanking", "bank", "Net Banking", "All major Indian banks"],
+        ["cod", "cash", "Cash on Delivery", t.total > 5000 ? "Not available for orders above ₹5,000" : "Pay in cash or UPI when your plants arrive"],
+      ];
+      view.innerHTML = `<div class="checkout"><section class="card card-pad">
+        <h2 style="font-size:1.6rem">Payment</h2>
+        <div class="notice green" style="margin-bottom:18px">${icon("truck")} <span>Delivering to <b>${esc(S.addr.name)}</b>, ${esc(S.addr.line)}, ${esc(S.addr.city)} – ${S.addr.pin} on <b>${fmtDate(S.date)}</b>, ${S.slot}</span></div>
+        ${opts.map(([v, ic, l, d]) => `<label class="pay-opt"><input type="radio" name="pay" value="${v}" ${v === S.pay ? "checked" : ""} ${v === "cod" && t.total > 5000 ? "disabled" : ""}><span style="color:var(--forest-700)">${icon(ic, 22)}</span><div><b>${l}</b><div class="pay-sub">${d}</div></div></label>`).join("")}
+        <div class="flex between" style="margin-top:12px"><button class="btn btn-outline" id="back">← Back</button></div>
+      </section>${summary(`Place Order · ${inr(t.total)}`, "next")}</div>`;
+      document.getElementById("back").onclick = () => go(1);
+      document.getElementById("next").onclick = () => {
+        S.pay = view.querySelector("[name=pay]:checked").value;
+        if (S.pay === "cod") return placeOrder();
+        // Simulated Razorpay Checkout overlay
+        const m = openModal("Razorpay Secure Checkout", `
+          <div style="text-align:center;padding:10px 0">
+            <div class="subtle">Paying to</div><b style="font-size:1.1rem">Sri Venkateswara Nursery</b>
+            <div style="font-family:var(--font-display);font-size:2.2rem;margin:10px 0">${inr(t.total)}</div>
+            <div class="tag tag-gray">${{ upi: "UPI", card: "Card", netbanking: "Net Banking" }[S.pay]}</div>
+            <div id="rzp" style="margin-top:22px" class="muted">Waiting for payment confirmation…</div>
+            <p class="subtle" style="margin-top:22px">Prototype simulation — production uses Razorpay Checkout with server-side signature verification.</p>
+          </div>`, `<button class="btn btn-outline" data-close>Cancel</button><button class="btn btn-primary" id="paid">Simulate successful payment</button>`);
+        m.querySelector("#paid").onclick = () => { m.querySelector("#rzp").innerHTML = `<b style="color:var(--ok)">✓ Payment successful</b>`; setTimeout(() => { closeModal(); placeOrder(); }, 700); };
+      };
+    }
+
+    function placeOrder() {
+      const t = cartTotals(S.coupon);
+      const order = {
+        id: "SVN-" + (10483 + Store.orders().length), placed: new Date().toISOString(), status: S.pay === "cod" ? "new" : "new",
+        items: t.lines.map((l) => ({ id: l.id, qty: l.qty, price: l.p.price })), total: t.total, discount: t.discount, delivery: t.delivery,
+        pay: S.pay, paid: S.pay !== "cod", addr: S.addr, date: S.date, slot: S.slot, coupon: t.coupon,
+      };
+      Store.set("orders", [order, ...Store.orders()]);
+      Store.set("cart", []); Store.set("coupon", null);
+      S.order = order; go(3);
+    }
+
+    /* Step 4 — Confirmation */
+    function stepDone() {
+      const o = S.order;
+      view.innerHTML = `<div class="card card-pad" style="max-width:720px;margin:0 auto;text-align:center;padding:40px 28px">
+        <div style="width:72px;height:72px;border-radius:50%;background:var(--ok-bg);color:var(--ok);display:grid;place-items:center;margin:0 auto 18px">${icon("check", 36, 2.4)}</div>
+        <h1 style="font-size:2rem">Thank you! Your order is placed.</h1>
+        <p class="muted">Order <b>${o.id}</b> · ${o.paid ? "Paid online" : "Cash on Delivery"} · ${inr(o.total)}</p>
+        <div class="notice green" style="text-align:left;margin:20px 0">${icon("bell")} <span>Confirmation sent via <b>Email</b>, <b>SMS</b> and <b>WhatsApp</b>. You'll get updates when your order is dispatched and out for delivery.</span></div>
+        <div class="track"><div class="on">Placed</div><div>Confirmed</div><div>Dispatched</div><div>Out for delivery</div><div>Delivered</div></div>
+        <div class="divider"></div>
+        <div style="text-align:left">${o.items.map((i) => { const p = byId(i.id); return `<div class="sum-row"><span>${esc(p.name)} × ${i.qty}</span><span>${inr(p.price * i.qty)}</span></div>`; }).join("")}
+          ${o.discount ? `<div class="sum-row" style="color:var(--ok)"><span>Coupon ${o.coupon}</span><span>− ${inr(o.discount)}</span></div>` : ""}
+          <div class="sum-row"><span>Delivery</span><span>${o.delivery ? inr(o.delivery) : "FREE"}</span></div>
+          <div class="sum-row total"><span>Total</span><span>${inr(o.total)}</span></div>
+          <p class="subtle" style="margin-top:12px">Delivering on ${fmtDate(o.date)}, ${o.slot} to ${esc(o.addr.name)}, ${esc(o.addr.line)}, ${esc(o.addr.city)} – ${o.addr.pin}</p></div>
+        <div class="flex wrap" style="justify-content:center;margin-top:20px"><a href="account.html#orders" class="btn btn-primary">Track my order</a><a href="shop.html" class="btn btn-outline">Continue shopping</a></div>
+      </div>`;
+    }
+
+    function go(n) { S.step = n; render(); window.scrollTo({ top: 0, behavior: "smooth" }); }
+    function render() { paintSteps(); [stepCart, stepDelivery, stepPayment, stepDone][S.step](); }
+    render();
+  </script>
+</body>
+</html>

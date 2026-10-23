@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Project Blueprint — Sri Venkateswara Nursery E-Commerce Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .doc { display: grid; grid-template-columns: 230px 1fr; gap: 40px; align-items: start; }
+    .toc { position: sticky; top: 20px; font-size: .86rem; }
+    .toc b { display: block; font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px; }
+    .toc a { display: block; padding: 6px 10px; border-left: 2px solid var(--line); color: var(--ink-2); }
+    .toc a:hover, .toc a.on { border-left-color: var(--leaf-500); color: var(--forest-700); background: var(--leaf-50); }
+    .doc section { padding: 8px 0 44px; scroll-margin-top: 20px; }
+    .doc section > h2 { display: flex; align-items: baseline; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--line); margin-bottom: 20px; }
+    .doc section > h2 .num { font-family: var(--font-body); font-size: .8rem; font-weight: 700; color: var(--leaf-500); letter-spacing: .06em; }
+    .facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .facts div { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+    .facts b { display: block; font-family: var(--font-display); font-size: 1.35rem; font-weight: 500; }
+    .facts span { font-size: .8rem; color: var(--ink-3); }
+    .demo-card { padding: 18px; display: flex; flex-direction: column; gap: 8px; transition: border-color .15s, box-shadow .15s; }
+    .demo-card:hover { border-color: var(--leaf-400); box-shadow: var(--shadow); }
+    .demo-card .refs { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; }
+    .arch { display: grid; gap: 14px; }
+    .arch-row { display: grid; gap: 12px; }
+    .arch-lbl { font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 6px; }
+    .node { border: 1px solid var(--line-strong); background: #fff; border-radius: 12px; padding: 12px 14px; font-size: .86rem; }
+    .node b { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+    .node span { color: var(--ink-3); font-size: .8rem; }
+    .node.core { background: var(--leaf-50); border-color: var(--leaf-400); }
+    .node.data { background: #f3f6fb; border-color: #c6d3e8; }
+    .node.ext { background: var(--marigold-100); border-color: #ecd391; }
+    .arrow { text-align: center; color: var(--ink-3); font-size: .8rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .arrow::before, .arrow::after { content: ""; height: 1px; width: 60px; background: var(--line-strong); }
+    .flow { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0; counter-reset: f; }
+    .flow div { counter-increment: f; position: relative; padding: 46px 12px 0; font-size: .84rem; text-align: center; }
+    .flow div::before { content: counter(f); position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 32px; height: 32px; border-radius: 50%; background: var(--forest-700); color: #fff; display: grid; place-items: center; font-weight: 700; z-index: 1; }
+    .flow div::after { content: ""; position: absolute; top: 16px; left: 0; right: 0; height: 2px; background: var(--leaf-200); }
+    .flow div:first-child::after { left: 50%; } .flow div:last-child::after { right: 50%; }
+    .flow b { display: block; margin-bottom: 4px; }
+    .gantt { display: grid; grid-template-columns: 210px repeat(20, 1fr); font-size: .78rem; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff; }
+    .gantt > div { border-bottom: 1px solid var(--line); padding: 8px 0; min-height: 40px; display: flex; align-items: center; }
+    .gantt .gh { background: var(--surface-2); font-weight: 700; color: var(--ink-3); justify-content: center; font-size: .7rem; border-left: 1px solid var(--line); }
+    .gantt .gl { padding: 8px 12px; font-weight: 600; }
+    .gantt .gl small { display: block; color: var(--ink-3); font-weight: 500; }
+    .gantt .gc { border-left: 1px solid #f1eee6; padding: 0; }
+    .gantt .bar { height: 22px; border-radius: 0 4px 4px 0; background: var(--leaf-500); margin: 0 1px; width: 100%; }
+    .gantt .bar.sup { background: var(--leaf-200); }
+    .gantt .bar.ms { background: var(--forest-700); }
+    .qa details { border: 1px solid var(--line); background: #fff; border-radius: 12px; padding: 16px 18px; margin-bottom: 10px; }
+    .qa summary { font-weight: 600; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+    .qa summary::-webkit-details-marker { display: none; }
+    .qa summary::after { content: "+"; color: var(--leaf-500); font-size: 1.2rem; line-height: 1; }
+    .qa details[open] summary::after { content: "–"; }
+    .qa details p, .qa details ul { margin: 10px 0 0; color: var(--ink-2); font-size: .92rem; }
+    .checklist li { margin-bottom: 8px; }
+    .tbl code, .code { font-family: ui-monospace, Menlo, monospace; font-size: .8rem; background: var(--surface-2); padding: 1px 6px; border-radius: 5px; }
+    .m-get { color: var(--ok); font-weight: 700; } .m-post { color: var(--info); font-weight: 700; } .m-patch { color: var(--warn); font-weight: 700; } .m-del { color: var(--crit); font-weight: 700; }
+    @media (max-width: 1024px) { .doc { grid-template-columns: 1fr; } .toc { display: none; } .facts { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 760px) { .flow { grid-template-columns: 1fr 1fr; row-gap: 20px; } .flow div::after { display: none; } .gantt { grid-template-columns: 130px repeat(20, 1fr); font-size: .66rem; } .gantt .gh { font-size: .55rem; } .arch-row { grid-template-columns: 1fr !important; } }
+    @media print {
+      .proto-ribbon, .toc, .no-print { display: none !important; }
+      .doc { grid-template-columns: 1fr; }
+      body { background: #fff; font-size: 12px; }
+      .doc section { break-inside: avoid-page; padding-bottom: 24px; }
+      .qa details { break-inside: avoid; }
+      .qa details:not([open]) > *:not(summary) { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <div class="proto-ribbon"><div class="container">
+    <span><span class="dot-live"></span><strong>Reference Prototype v0.1</strong> · Project Blueprint — for client review</span>
+    <nav><a href="index.html">Presentation</a><a href="overview.html" class="active">Project Blueprint</a><a href="home.html">Customer Website</a><a href="admin.html">Admin Panel</a><a href="mobile-app.html">Mobile App</a></nav>
+  </div></div>
+
+  <header class="hero"><div class="container" style="grid-template-columns:1fr;padding-top:56px;padding-bottom:56px">
+    <div>
+      <span class="eyebrow" style="color:#a9d3b8">Project Blueprint · Version 1.0 · 23 October 2026</span>
+      <h1 style="max-width:900px">E-Commerce Website & Mobile Application for Sri Venkateswara Nursery</h1>
+      <p style="max-width:720px">A reference prototype and technical blueprint covering every feature, screen, system component and milestone in the approved project proposal, for review before development begins.</p>
+      <div class="flex wrap" style="margin-top:22px;gap:24px;color:#d4e6da;font-size:.9rem">
+        <span><b style="color:#fff">Prepared for</b><br>Mr. Satish Vinti, Owner / Proprietor</span>
+        <span><b style="color:#fff">Prepared by</b><br>Akula Surya Durga Sai Ram, Project Developer</span>
+        <span><b style="color:#fff">Status</b><br>Submitted for approval</span>
+      </div>
+      <div class="flex wrap no-print" style="margin-top:24px">
+        <a href="#demo" class="btn btn-light">Explore the prototype</a>
+        <button class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.4)" onclick="document.querySelectorAll('.qa details').forEach(d=>d.open=true);window.print()">Print / Save as PDF</button>
+      </div>
+    </div>
+  </div></header>
+
+  <main class="section" style="padding-top:40px">
+    <div class="container doc">
+      <nav class="toc" id="toc" aria-label="Contents">
+        <b>Contents</b>
+        <a href="#summary">1. Summary</a><a href="#demo">2. Prototype walkthrough</a><a href="#scope">3. Scope</a>
+        <a href="#modules">4. Feature modules</a><a href="#arch">5. System architecture</a><a href="#stack">6. Technology stack</a>
+        <a href="#data">7. Data model</a><a href="#api">8. API design</a><a href="#flows">9. Key workflows</a>
+        <a href="#security">10. Security & compliance</a><a href="#nfr">11. Quality targets</a><a href="#timeline">12. Timeline</a>
+        <a href="#inputs">13. Inputs from client</a><a href="#risks">14. Risks</a><a href="#faq">15. Technical Q&A</a><a href="#next">16. Next steps</a>
+      </nav>
+
+      <div>
+        <!-- 1 -->
+        <section id="summary">
+          <h2><span class="num">01</span>Project summary</h2>
+          <p class="muted" style="font-size:1.02rem">The nursery currently sells to walk-in customers only. This project delivers a <b>responsive website</b>, a <b>cross-platform mobile app (Android & iOS)</b> and an <b>admin dashboard</b>, all powered by <b>one shared backend</b>. Customers can browse, order, pay online or by cash on delivery, and get home delivery. The owner can manage products, stock, orders, bulk event quotes and festival promotions from one place.</p>
+          <div class="facts" style="margin-top:20px">
+            <div><b>3</b><span>Applications: website, mobile app, admin panel</span></div>
+            <div><b>1</b><span>Shared backend & database for all channels</span></div>
+            <div><b>8 phases</b><span>Agile delivery with client review at each stage</span></div>
+            <div><b>20 weeks</b><span>About 5 months, including 30 days of post-launch support</span></div>
+          </div>
+        </section>
+
+        <!-- 2 -->
+        <section id="demo">
+          <h2><span class="num">02</span>Prototype walkthrough</h2>
+          <p class="muted">Every page below is clickable and works end to end with sample data. Section numbers (§) refer to the approved proposal document. <b>Suggested demo flow:</b> Home → search “rose” → product page → add to cart → apply <span class="code">DIWALI20</span> → checkout → place order → open the Admin Panel and see the order arrive → change its status.</p>
+          <div class="grid grid-3" id="demoCards" style="margin-top:18px"></div>
+          <div class="notice gold" style="margin-top:16px">⚠️ <span><b>About this prototype:</b> it's built as static HTML/JS so it can be reviewed without any servers. Data is stored in the browser for the demo only. Product illustrations stand in for real photos. The production system uses the stack in §6 with a real database, real payments and real notifications.</span></div>
+        </section>
+
+        <!-- 3 -->
+        <section id="scope">
+          <h2><span class="num">03</span>Scope of work</h2>
+          <div class="grid grid-2">
+            <div class="card card-pad"><h3 class="flex" style="gap:8px;color:var(--ok)">✓ In scope (Phase 1 release)</h3><ul class="muted checklist" style="padding-left:18px;margin:0">
+              <li>Responsive customer website (desktop, tablet, mobile browsers)</li><li>Android & iOS app from one React Native codebase</li>
+              <li>Admin panel with owner and staff roles</li><li>Catalogue, search, filters, cart, coupons, checkout</li>
+              <li>Razorpay (UPI, cards, net banking, wallets) and Cash on Delivery</li><li>OTP login, profiles, address book, order history & tracking, wishlist</li>
+              <li>Bulk / event orders with Request-a-Quote</li><li>Festival campaigns, coupons, banners, push & email announcements</li>
+              <li>Blog / plant-care tips, contact & store info, Google Maps</li><li>Deployment, Play Store & App Store publishing, 30 days of support</li></ul></div>
+            <div class="card card-pad"><h3 class="flex" style="gap:8px;color:var(--crit)">✕ Out of scope (future phases)</h3><ul class="muted checklist" style="padding-left:18px;margin:0">
+              <li>Live delivery-vehicle GPS tracking and logistics management</li><li>Integration with third-party wholesale suppliers</li>
+              <li>Franchise or multi-store management</li><li>Loyalty points (designed for Phase 2, marked optional in this prototype)</li>
+              <li>Live plant auctions, subscription boxes, landscaping bookings</li><li>Product photography and content writing (supplied by the client)</li></ul>
+              <p class="subtle" style="margin:12px 0 0">The architecture leaves room for each of these to be added later without a rebuild.</p></div>
+          </div>
+        </section>
+
+        <!-- 4 -->
+        <section id="modules">
+          <h2><span class="num">04</span>Feature modules</h2>
+          <div class="card table-wrap"><table class="tbl">
+            <thead><tr><th>§</th><th>Module</th><th>Key functionality</th><th>Web</th><th>App</th><th>Admin</th></tr></thead>
+            <tbody id="modRows"></tbody></table></div>
+        </section>
+
+        <!-- 5 -->
+        <section id="arch">
+          <h2><span class="num">05</span>System architecture</h2>
+          <p class="muted">A single API serves every channel, so prices, stock and orders always match across website, app and admin panel.</p>
+          <div class="arch card card-pad">
+            <div><div class="arch-lbl">Client applications</div><div class="arch-row" style="grid-template-columns:repeat(3,1fr)">
+              <div class="node"><b>🌐 Customer Website</b><span>Next.js (React) · Tailwind CSS · server-rendered for SEO</span></div>
+              <div class="node"><b>📱 Mobile App</b><span>React Native · Android & iOS · offline cache</span></div>
+              <div class="node"><b>🛠 Admin Panel</b><span>React · role-based access (Owner / Staff)</span></div></div></div>
+            <div class="arrow">HTTPS · REST / JSON · JWT auth</div>
+            <div><div class="arch-lbl">Backend API (Node.js + Express)</div><div class="arch-row" style="grid-template-columns:repeat(4,1fr)"></div></div>
+            <div class="arrow">Queries · events</div>
+            <div class="arch-row" style="grid-template-columns:1fr 1fr">
+              <div><div class="arch-lbl">Data layer</div><div class="arch-row" style="grid-template-columns:1fr 1fr 1fr" id="dataNodes"></div></div>
+              <div><div class="arch-lbl">Third-party services</div><div class="arch-row" style="grid-template-columns:1fr 1fr 1fr" id="extNodes"></div></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 6 -->
+        <section id="stack">
+          <h2><span class="num">06</span>Technology stack & rationale</h2>
+          <div class="card table-wrap"><table class="tbl"><thead><tr><th>Layer</th><th>Choice</th><th>Why</th></tr></thead><tbody id="stackRows"></tbody></table></div>
+        </section>
+
+        <!-- 7 -->
+        <section id="data">
+          <h2><span class="num">07</span>Data model (core entities)</h2>
+          <div class="grid grid-3" id="entities"></div>
+          <p class="subtle" style="margin-top:12px">Money is stored in paise (integers) so rounding errors never occur. Every record keeps <span class="code">createdAt</span> / <span class="code">updatedAt</span>, and important tables keep an audit log of who changed what.</p>
+        </section>
+
+        <!-- 8 -->
+        <section id="api">
+          <h2><span class="num">08</span>API design (REST, versioned under <span class="code" style="font-size:1rem">/api/v1</span>)</h2>
+          <div class="card table-wrap"><table class="tbl"><thead><tr><th>Method</th><th>Endpoint</th><th>Purpose</th><th>Access</th></tr></thead><tbody id="apiRows"></tbody></table></div>
+          <p class="subtle" style="margin-top:10px">Full OpenAPI (Swagger) documentation is delivered with the backend in Phase 3.</p>
+        </section>
+
+        <!-- 9 -->
+        <section id="flows">
+          <h2><span class="num">09</span>Key workflows</h2>
+          <h3>Online payment (Razorpay)</h3>
+          <div class="flow card card-pad" style="padding-top:22px">
+            <div><b>Checkout</b>Customer confirms cart, address & delivery date</div>
+            <div><b>Create order</b>Server re-prices the cart, reserves stock, creates a Razorpay order</div>
+            <div><b>Pay</b>Razorpay Checkout handles UPI, card or net banking</div>
+            <div><b>Verify</b>Server verifies the payment signature; the webhook confirms it</div>
+            <div><b>Confirm</b>Order marked “Paid · New” and stock committed</div>
+            <div><b>Notify</b>Email, SMS, WhatsApp & push sent to the customer; owner alerted</div>
+          </div>
+          <div class="grid grid-2" style="margin-top:16px">
+            <div class="card card-pad"><h4>Order status lifecycle</h4>
+              <div class="flex wrap" style="gap:6px;margin:8px 0"><span class="status st-new">New</span>→<span class="status st-processing">Processing</span>→<span class="status st-dispatched">Dispatched</span>→<span class="status st-delivered">Delivered</span></div>
+              <p class="muted" style="font-size:.9rem;margin:0">An order can be <span class="status st-cancelled">Cancelled</span> before dispatch, and cancelling puts the stock back. Online payments are refunded through Razorpay. Every status change notifies the customer automatically.</p></div>
+            <div class="card card-pad"><h4>Cash on Delivery</h4>
+              <p class="muted" style="font-size:.9rem;margin:0">COD orders skip the payment step and carry a <span class="code">paymentMode=COD, paid=false</span> flag. The delivery person marks the order collected, which sets <span class="code">paid=true</span>. To limit risk, COD is capped (₹5,000 in the prototype), can be turned off per pin code, and asks for OTP confirmation on first orders.</p></div>
+            <div class="card card-pad"><h4>Bulk / event quote</h4>
+              <p class="muted" style="font-size:.9rem;margin:0">Customer submits a request → admin is alerted → admin prepares the quote (unit price, tier discount, setup charges) → quote sent by WhatsApp & email with a payment link for the advance → once the advance is paid the order is confirmed and delivery is scheduled for the function date.</p></div>
+            <div class="card card-pad"><h4>Festival campaign</h4>
+              <p class="muted" style="font-size:.9rem;margin:0">Admin creates a campaign with dates, discount, coupon, banner and product collection → it switches on and off automatically on schedule → the homepage banner, sale prices and coupon go live together → a push notification and email go out to opted-in customers.</p></div>
+          </div>
+        </section>
+
+        <!-- 10 -->
+        <section id="security">
+          <h2><span class="num">10</span>Security & compliance</h2>
+          <div class="grid grid-2" id="secGrid"></div>
+        </section>
+
+        <!-- 11 -->
+        <section id="nfr">
+          <h2><span class="num">11</span>Quality targets (acceptance criteria)</h2>
+          <div class="card table-wrap"><table class="tbl"><thead><tr><th>Area</th><th>Target</th><th>How it's measured</th></tr></thead><tbody>
+            <tr><td>Page speed</td><td>Largest Contentful Paint under 2.5 s on 4G mobile</td><td>Google Lighthouse / PageSpeed Insights</td></tr>
+            <tr><td>Lighthouse score</td><td>90+ for Performance, Accessibility, SEO and Best Practices</td><td>Lighthouse audit before launch</td></tr>
+            <tr><td>API response</td><td>95% of requests under 300 ms</td><td>Load testing (k6) + monitoring</td></tr>
+            <tr><td>Availability</td><td>99.5% monthly uptime</td><td>Uptime monitor with alerts</td></tr>
+            <tr><td>Backups</td><td>Daily automated database backups, kept for 7 days at minimum</td><td>Test restore before launch</td></tr>
+            <tr><td>Compatibility</td><td>Latest 2 versions of Chrome, Safari, Edge, Firefox · Android 8+ · iOS 15+</td><td>Cross-browser & device testing (Phase 6)</td></tr>
+            <tr><td>Accessibility</td><td>WCAG 2.1 AA: contrast, keyboard navigation, screen-reader labels</td><td>Automated (axe) + manual check</td></tr>
+          </tbody></table></div>
+          <p class="subtle" style="margin-top:10px">These are proposed targets, to be confirmed with the client in Phase 1 and used as UAT sign-off criteria.</p>
+        </section>
+
+        <!-- 12 -->
+        <section id="timeline">
+          <h2><span class="num">12</span>Timeline & milestones</h2>
+          <div class="table-wrap"><div class="gantt" id="gantt" role="img" aria-label="Gantt chart of 8 project phases over 20 weeks"></div></div>
+          <div class="flex wrap subtle" style="margin-top:10px;gap:18px">
+            <span class="flex" style="gap:6px"><i style="width:14px;height:10px;background:var(--leaf-500);border-radius:2px;display:inline-block"></i>Build phase</span>
+            <span class="flex" style="gap:6px"><i style="width:14px;height:10px;background:var(--forest-700);border-radius:2px;display:inline-block"></i>Launch</span>
+            <span class="flex" style="gap:6px"><i style="width:14px;height:10px;background:var(--leaf-200);border-radius:2px;display:inline-block"></i>Support</span>
+          </div>
+          <div class="card table-wrap" style="margin-top:18px"><table class="tbl"><thead><tr><th>Phase</th><th>Deliverable</th><th>Client sign-off</th></tr></thead><tbody id="msRows"></tbody></table></div>
+        </section>
+
+        <!-- 13 -->
+        <section id="inputs">
+          <h2><span class="num">13</span>Inputs required from the client</h2>
+          <div class="grid grid-2" id="inputGrid"></div>
+        </section>
+
+        <!-- 14 -->
+        <section id="risks">
+          <h2><span class="num">14</span>Risks & mitigations</h2>
+          <div class="card table-wrap"><table class="tbl"><thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead><tbody id="riskRows"></tbody></table></div>
+        </section>
+
+        <!-- 15 -->
+        <section id="faq" class="qa">
+          <h2><span class="num">15</span>Anticipated technical questions</h2>
+          <div id="qaList"></div>
+        </section>
+
+        <!-- 16 -->
+        <section id="next">
+          <h2><span class="num">16</span>Next steps & decisions needed</h2>
+          <div class="grid grid-2">
+            <div class="card card-pad"><h3>Immediate next steps</h3><ol class="muted checklist" style="padding-left:18px;margin:0">
+              <li>Kickoff meeting: walk through this prototype and confirm the feature list</li>
+              <li>Confirm product categories and share the initial product list</li>
+              <li>Agree on visual identity: logo, colours and the brand name used online</li>
+              <li>Sign off on Phase 1 wireframes (this prototype is the starting point)</li>
+              <li>Start Razorpay merchant KYC and developer account registrations</li></ol></div>
+            <div class="card card-pad"><h3>Decisions for the client</h3><ul class="muted checklist" style="padding-left:18px;margin:0">
+              <li>Delivery zones (pin codes), delivery fee and free-delivery threshold</li>
+              <li>COD limit and whether COD is available in every zone</li>
+              <li>Replacement / refund policy wording</li>
+              <li>Domain name (e.g. <span class="code">svnursery.in</span>) and business email</li>
+              <li>Database approach: proposed MongoDB + MySQL, or a single PostgreSQL (see Q&A)</li>
+              <li>Whether loyalty points are part of launch or Phase 2</li></ul></div>
+          </div>
+          <div class="card card-pad" style="margin-top:20px;text-align:center">
+            <p style="font-family:var(--font-display);font-size:1.3rem;margin-bottom:6px">Submitted for your kind consideration and approval.</p>
+            <p class="muted" style="margin:0">Akula Surya Durga Sai Ram · Project Developer · 23 October 2026</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    const tag = (t) => `<span class="tag tag-gray">${t}</span>`;
+    // 2. Prototype walkthrough
+    document.getElementById("demoCards").innerHTML = [
+      ["home.html", "leaf", "Homepage", "Hero, category navigation, best-sellers, new arrivals, festival countdown, testimonials, newsletter", ["§4.1", "§4.10"]],
+      ["shop.html", "search", "Product catalogue", "Category / occasion browsing, filters (price, type, sun, pot size, stock), live search suggestions, sorting", ["§4.2"]],
+      ["product.html?id=103", "eye", "Product detail", "Image gallery, care instructions, growing tips, stock status, quantity, Buy Now, pin-code check, reviews, related items", ["§4.3"]],
+      ["cart.html", "cart", "Cart & checkout", "Quantity updates, coupons, address, delivery date & slot, UPI / card / net banking / COD, confirmation", ["§4.5", "§6.4"]],
+      ["account.html", "user", "Customer account", "OTP login (demo OTP 123456), order history with tracking, wishlist, address book, profile, loyalty preview", ["§4.4"]],
+      ["bulk-orders.html", "gift", "Bulk & event orders", "Event types, bulk pricing tiers, Request-a-Quote form with function date and decoration needs", ["§4.9"]],
+      ["offers.html", "tag", "Festival offers", "Live campaign with countdown, festival gift packs, coupon codes, festival calendar", ["§4.10"]],
+      ["care-tips.html", "file", "Blog / plant care", "Article listing with categories, article page with linked products, share buttons", ["§4.7"]],
+      ["contact.html", "map", "Contact & store info", "Phone, WhatsApp, email, map, working hours with open/closed status, enquiry form, FAQ", ["§4.8"]],
+      ["admin.html", "settings", "Admin panel", "Dashboard, orders, products, inventory & low-stock alerts, bulk quotes, campaigns, blog, customers, reports, roles", ["§4.6", "§4.9", "§4.10"]],
+      ["mobile-app.html", "phoneDevice", "Mobile app", "Onboarding, home, product, UPI checkout, tracking with push, Plant Care Companion, biometrics, dark mode, locator", ["§5.1–5.5"]],
+    ].map(([h, i, t, d, refs]) => `<a href="${h}" class="card demo-card"><div class="flex" style="gap:10px"><span class="ico" style="width:38px;height:38px;border-radius:10px;background:var(--leaf-100);color:var(--forest-700);display:grid;place-items:center">${icon(i, 18)}</span><b>${t}</b></div><p class="muted" style="font-size:.86rem;margin:0">${d}</p><div class="refs">${refs.map(tag).join("")}<span style="margin-left:auto;color:var(--forest-700);font-weight:600;font-size:.84rem">Open →</span></div></a>`).join("");
+
+    // 4. Modules
+    const Y = '<span style="color:var(--ok);font-weight:700">●</span>', N = '<span style="color:var(--line-strong)">—</span>';
+    document.getElementById("modRows").innerHTML = [
+      ["4.1", "Homepage", "Hero banner, quick categories, best-sellers, new arrivals, testimonials, newsletter", Y, Y, "Banners"],
+      ["4.2", "Product catalogue", "Category / type / occasion browsing, filters, search with auto-suggestions, sorting", Y, Y, Y],
+      ["4.3", "Product detail", "Gallery, description, care & growing tips, stock, quantity, Add to Cart / Buy Now, reviews, related items", Y, Y, Y],
+      ["4.4", "User account", "Email/phone + OTP login, profile, address book, order history & tracking, wishlist, loyalty (Phase 2)", Y, Y, "Customers"],
+      ["4.5", "Cart & checkout", "Quantities, coupons, delivery date & address, UPI / net banking / cards / COD, email + SMS confirmation", Y, Y, "Orders"],
+      ["4.6", "Admin panel", "Secure staff login, products & categories, stock & low-stock alerts, order processing, reports, banners, analytics", N, N, Y],
+      ["4.7", "Blog / plant care", "Articles and guides, SEO, easy publishing by admin", Y, Y, Y],
+      ["4.8", "Contact & store info", "Address, phone, WhatsApp, email, Google Maps, contact form, working hours", Y, Y, "Enquiries"],
+      ["4.9", "Bulk & event orders", "Request-a-Quote, wholesale pricing, scheduled function-date delivery, admin quote & confirm", Y, Y, Y],
+      ["4.10", "Festival offers", "Festival discounts & bundles, gift packs, scheduled pricing, banners, campaign coupons, push & email", Y, Y, Y],
+      ["5.2", "Push notifications", "Order status, flash sales, back-in-stock, watering reminders", N, Y, "Send"],
+      ["5.3–5.5", "App extras", "Onboarding, biometric login, offline browsing, dark mode, care companion, location & ETA, store locator", N, Y, N],
+    ].map(([s, m, f, w, a, ad]) => `<tr><td><b>${s}</b></td><td><b>${m}</b></td><td class="muted" style="font-size:.86rem">${f}</td><td>${w}</td><td>${a}</td><td>${ad === Y || ad === N ? ad : `<span class="subtle">${ad}</span>`}</td></tr>`).join("");
+
+    // 5. Architecture nodes
+    document.querySelector("#arch .arch-row[style*='repeat(4']").innerHTML = [
+      ["Auth & OTP", "JWT sessions, OTP, roles"], ["Catalogue & Search", "Products, categories, filters"], ["Cart & Orders", "Pricing, stock reservation, status"], ["Payments", "Razorpay orders, webhooks, refunds"],
+      ["Promotions", "Campaigns, coupons, banners"], ["Bulk Quotes", "Requests, quotes, scheduling"], ["Notifications", "Email, SMS, WhatsApp, push"], ["Content & Reports", "Blog, analytics, CSV export"],
+    ].map(([t, d]) => `<div class="node core"><b>${t}</b><span>${d}</span></div>`).join("");
+    document.getElementById("dataNodes").innerHTML = [["MongoDB", "Catalogue, blog, content"], ["MySQL", "Users, orders, payments"], ["S3 / Cloudinary", "Product images & banners"]].map(([t, d]) => `<div class="node data"><b>${t}</b><span>${d}</span></div>`).join("");
+    document.getElementById("extNodes").innerHTML = [["Razorpay", "Payments"], ["MSG91 / Twilio", "OTP & SMS"], ["WhatsApp API", "Order messages"], ["Firebase FCM", "App push"], ["Google Maps", "Locator & zones"], ["Google Analytics", "Traffic & conversion"]].map(([t, d]) => `<div class="node ext"><b>${t}</b><span>${d}</span></div>`).join("");
+
+    // 6. Stack
+    document.getElementById("stackRows").innerHTML = [
+      ["Website", "Next.js (React) + Tailwind CSS", "Server-side rendering gives fast first loads and strong Google SEO for product and blog pages. Tailwind keeps the design consistent and responsive."],
+      ["State management", "React Context (+ Redux Toolkit if needed)", "Context is enough for cart and session. Redux is added only if the state becomes complex, so no extra weight by default."],
+      ["Mobile app", "React Native + React Native Paper", "One codebase for Android and iOS. It shares business logic and API clients with the web, so it's faster and cheaper to build and maintain than two native apps."],
+      ["Backend", "Node.js + Express.js (REST)", "Same language (JavaScript/TypeScript) across the whole stack, a large ecosystem and official SDKs for Razorpay, Firebase and Twilio."],
+      ["Database", "MongoDB (catalogue) + MySQL (transactions)", "Product attributes vary a lot by category (seeds vs saplings vs pots), which suits a flexible document store. Orders and payments need ACID transactions, which suits a relational DB."],
+      ["Auth", "JWT (access + refresh) + OTP via MSG91 / Twilio", "Passwordless login suits mobile-first Indian customers. Short-lived tokens with refresh keep sessions secure."],
+      ["Media", "Cloudinary or AWS S3 + CDN", "Automatic resizing and WebP conversion keep product images fast on mobile data."],
+      ["Payments", "Razorpay", "Supports UPI (GPay, PhonePe, Paytm), cards, net banking and wallets, with built-in refunds and settlement reports. Card data never touches our servers."],
+      ["Hosting", "Vercel (website) · AWS EC2 / Render (API)", "Managed hosting with free SSL (Let's Encrypt), automatic deploys from Git and easy scaling."],
+      ["Monitoring", "Uptime monitor, error tracking, Google Analytics", "Problems are caught before customers report them, and owners see traffic and conversion."],
+    ].map(([l, c, w]) => `<tr><td><b>${l}</b></td><td>${c}</td><td class="muted" style="font-size:.88rem">${w}</td></tr>`).join("");
+
+    // 7. Entities
+    document.getElementById("entities").innerHTML = [
+      ["Product", "MongoDB", "name, slug, categoryId, price, mrp, stock, images[], attributes {sun, type, potSize}, care{}, tags[], isActive"],
+      ["Category", "MongoDB", "name, slug, parentId, image, sortOrder"],
+      ["User", "MySQL", "id, name, phone, email, role (customer / staff / owner), createdAt"],
+      ["Address", "MySQL", "userId, label, line, city, pincode, isDefault"],
+      ["Order", "MySQL", "id, userId, status, subtotal, discount, deliveryFee, total, paymentMode, paid, deliveryDate, slot"],
+      ["OrderItem", "MySQL", "orderId, productId, nameSnapshot, priceSnapshot, qty"],
+      ["Payment", "MySQL", "orderId, razorpayOrderId, razorpayPaymentId, status, amount, refundedAmount"],
+      ["Coupon / Campaign", "MySQL", "code, type (%/flat/free-ship), value, minOrder, startsAt, endsAt, usageLimit"],
+      ["BulkQuote", "MySQL", "eventType, functionDate, qty, items, budget, status, quotedAmount, advancePaid"],
+      ["Review", "MongoDB", "productId, userId, rating, text, photos[], isVerified, isApproved"],
+      ["Post (Blog)", "MongoDB", "title, slug, category, body, cover, seo{}, status, publishedAt"],
+      ["Wishlist / Notification", "MySQL", "userId, productId · device tokens, preferences"],
+    ].map(([n, db, f]) => `<div class="card card-pad" style="padding:16px"><div class="flex between"><b>${n}</b><span class="tag ${db === "MySQL" ? "tag-gray" : "tag-green"}">${db}</span></div><p class="subtle" style="margin:8px 0 0;font-family:ui-monospace,Menlo,monospace;font-size:.76rem;line-height:1.6">${f}</p></div>`).join("");
+
+    // 8. API
+    const mcls = { GET: "m-get", POST: "m-post", PATCH: "m-patch", DELETE: "m-del" };
+    document.getElementById("apiRows").innerHTML = [
+      ["POST", "/auth/otp/send", "Send OTP to phone or email", "Public (rate-limited)"], ["POST", "/auth/otp/verify", "Verify OTP, issue JWT", "Public"],
+      ["GET", "/products?category=&q=&sun=&minPrice=&sort=&page=", "Catalogue with filters, search, sort, pagination", "Public"], ["GET", "/products/:slug", "Product detail, care info, related items", "Public"],
+      ["GET", "/search/suggest?q=", "Auto-suggestions", "Public"], ["GET", "/delivery/check?pincode=", "Serviceability & ETA", "Public"],
+      ["GET · POST · PATCH", "/cart", "Get, add and update cart items", "Customer"], ["POST", "/cart/coupon", "Validate and apply a coupon", "Customer"],
+      ["POST", "/orders", "Create order (re-prices, reserves stock)", "Customer"], ["POST", "/payments/razorpay/order", "Create Razorpay order", "Customer"],
+      ["POST", "/payments/razorpay/verify", "Verify payment signature", "Customer"], ["POST", "/webhooks/razorpay", "Payment captured / failed / refunded events", "Razorpay (signed)"],
+      ["GET", "/me/orders · /me/wishlist · /me/addresses", "Account data", "Customer"], ["POST", "/bulk-quotes", "Submit Request-a-Quote", "Public"],
+      ["POST · PATCH · DELETE", "/admin/products", "Manage products & categories", "Owner / Staff"], ["PATCH", "/admin/orders/:id/status", "Update status (triggers notifications)", "Owner / Staff"],
+      ["PATCH", "/admin/bulk-quotes/:id", "Send quote / confirm", "Owner / Staff"], ["POST", "/admin/campaigns", "Create festival campaign & coupons", "Owner"],
+      ["GET", "/admin/reports/sales?from=&to=", "Revenue, top products, CSV export", "Owner"], ["POST", "/admin/notifications/broadcast", "Push / email announcement", "Owner"],
+    ].map(([m, e, p, a]) => `<tr><td>${m.split(" · ").map((x) => `<span class="${mcls[x]}">${x}</span>`).join(" · ")}</td><td><code>${e}</code></td><td class="muted" style="font-size:.88rem">${p}</td><td><span class="tag ${a.startsWith("Public") ? "tag-gray" : a.startsWith("Customer") ? "tag-green" : "tag-gold"}">${a}</span></td></tr>`).join("");
+
+    // 10. Security
+    document.getElementById("secGrid").innerHTML = [
+      ["lock", "Authentication", "OTP login with expiry (5 min), attempt limits and rate limiting. Short-lived JWT access tokens plus rotating refresh tokens. Admin accounts use a hashed password (bcrypt) plus OTP two-step verification."],
+      ["users", "Authorisation", "Role-based access control (Owner, Staff, Delivery) is enforced on the server for every admin endpoint, not just hidden in the UI."],
+      ["shield", "OWASP protection", "Parameterised queries / ORM against SQL & NoSQL injection, output encoding and a Content-Security-Policy against XSS, CSRF protection, Helmet security headers and input validation on every request."],
+      ["card", "Payments", "Card and UPI details are handled entirely by Razorpay (PCI-DSS compliant). Payments are confirmed only after server-side signature verification and webhooks, never from the browser alone."],
+      ["file", "Data protection", "HTTPS everywhere, encrypted backups, no secrets in code (environment variables), and personal data minimised. Built in line with India's Digital Personal Data Protection Act, 2023: consent, privacy policy, and data access/deletion on request."],
+      ["alert", "Testing & monitoring", "Security testing in Phase 6 (injection, XSS, broken auth, access control), dependency vulnerability scanning, error tracking and audit logs of admin actions."],
+    ].map(([i, t, d]) => `<div class="card card-pad"><div class="feature"><span class="ico">${icon(i)}</span><div><b>${t}</b><p>${d}</p></div></div></div>`).join("");
+
+    // 12. Gantt (weeks 1–20)
+    const phases = [["Phase 1", "Requirements & wireframes", 1, 2], ["Phase 2", "UI/UX design & approval", 3, 4], ["Phase 3", "Backend API", 5, 7], ["Phase 4", "Website frontend", 8, 10], ["Phase 5", "Mobile app", 11, 13], ["Phase 6", "Testing & QA", 14, 15], ["Phase 7", "Deployment & launch", 16, 16, "ms"], ["Phase 8", "Post-launch support", 17, 20, "sup"]];
+    let g = `<div class="gh" style="justify-content:flex-start;padding-left:12px;border-left:0">Phase</div>` + Array.from({ length: 20 }, (_, i) => `<div class="gh">W${i + 1}</div>`).join("");
+    phases.forEach(([p, n, s, e, cls]) => {
+      g += `<div class="gl">${p}<small>${n}</small></div>`;
+      for (let w = 1; w <= 20; w++) g += `<div class="gc">${w >= s && w <= e ? `<div class="bar ${cls || ""}" title="${p}: ${n} · Week ${s}${e > s ? "–" + e : ""}" style="border-radius:${w === s ? 4 : 0}px ${w === e ? 4 : 0}px ${w === e ? 4 : 0}px ${w === s ? 4 : 0}px"></div>` : ""}</div>`;
+    });
+    document.getElementById("gantt").innerHTML = g;
+    document.getElementById("msRows").innerHTML = [
+      ["1 · Wk 1–2", "Final feature list, sitemap, wireframes of all key pages, repository & environments", "Feature list & wireframes"],
+      ["2 · Wk 3–4", "Hi-fi designs for web, app and admin; green / nature-inspired design system; clickable prototype", "Design approval (before coding)"],
+      ["3 · Wk 5–7", "Database schemas, REST APIs, Razorpay integration, OTP login, admin roles, API documentation", "API demo"],
+      ["4 · Wk 8–10", "Responsive website and admin panel connected to live APIs", "Staging website review"],
+      ["5 · Wk 11–13", "Android & iOS app with push notifications and location features (test builds shared)", "Test app review"],
+      ["6 · Wk 14–15", "Functional, performance & security testing; UAT with client", "UAT sign-off"],
+      ["7 · Wk 16", "Production deploy, domain & SSL, Play Store & App Store publishing, admin handover & training", "Go-live approval"],
+      ["8 · Wk 17–20", "Bug fixes for 30 days, performance monitoring, minor content updates", "Project closure"],
+    ].map(([p, d, s]) => `<tr><td><b>${p}</b></td><td class="muted" style="font-size:.88rem">${d}</td><td><span class="tag tag-green">${s}</span></td></tr>`).join("");
+
+    // 13. Client inputs
+    document.getElementById("inputGrid").innerHTML = [
+      ["Brand", ["Logo (vector / high-res)", "Brand name & tagline to use online", "Preferred colours (if any)"]],
+      ["Catalogue", ["Product list with prices, MRP and stock", "Product photos (3–6 per product recommended)", "Care instructions for key plants"]],
+      ["Operations", ["Delivery zones (pin codes), fees and timings", "COD policy, return / replacement policy", "Staff who will use the admin panel"]],
+      ["Accounts & legal", ["Razorpay merchant KYC (business PAN, bank account, GST if registered)", "Google Play developer account (one-time US$25) and Apple Developer Program (US$99/year)", "Domain name, business email, WhatsApp Business number", "DLT registration for SMS templates (mandatory in India for OTP/SMS)"]],
+    ].map(([t, items]) => `<div class="card card-pad"><h4>${t}</h4><ul class="muted checklist" style="padding-left:18px;margin:0;font-size:.92rem">${items.map((i) => `<li>${i}</li>`).join("")}</ul></div>`).join("");
+
+    // 14. Risks
+    document.getElementById("riskRows").innerHTML = [
+      ["Product photos / content arrive late", "Delays catalogue setup and launch", "Placeholder content during development; bulk CSV import so content can be loaded quickly"],
+      ["App Store review rejection", "Delays iOS launch by days", "Follow Apple guidelines from the design stage; submit early in Phase 7 with buffer time"],
+      ["Payment gateway KYC delays", "Online payments not ready", "Start KYC in Phase 1; COD works from day one"],
+      ["Plants damaged in transit", "Refunds, poor reviews", "Packaging guidelines, photo-based replacement flow, delivery limited to serviceable zones"],
+      ["Scope additions mid-project", "Timeline slip", "Agile change log; new requests estimated and scheduled into a later phase"],
+      ["Festival traffic spikes", "Slow site during peak sales", "CDN caching, autoscaling hosting, load test before Diwali / Sankranti campaigns"],
+    ].map(([r, i, m]) => `<tr><td><b>${r}</b></td><td class="muted">${i}</td><td class="muted" style="font-size:.88rem">${m}</td></tr>`).join("");
+
+    // 15. Q&A
+    document.getElementById("qaList").innerHTML = [
+      ["Why two databases (MongoDB + MySQL)? Isn't that extra complexity?", "Product data is flexible: seeds, saplings and pots each have different attributes, so a document store fits it. Orders and payments need strict ACID transactions, so a relational DB fits those. The trade-off is running two databases. <b>Alternative:</b> a single PostgreSQL database with JSONB columns for product attributes covers both needs with one system. Either works; this is open for the client to decide in Phase 1."],
+      ["How do you prevent overselling when web and app users buy the same item at once?", "Both channels use the same API and database. When an order is created, stock is decremented inside a database transaction with a conditional update (<span class='code'>stock >= qty</span>), so two customers can never both buy the last unit. Unpaid online orders release their reserved stock after a timeout (e.g. 15 minutes)."],
+      ["What if a customer pays but the browser closes before the order is confirmed?", "Razorpay sends a signed <b>webhook</b> to the server independently of the browser. The server confirms the order from the webhook, and the handler is idempotent (keyed on payment ID), so duplicate events never create duplicate orders. A daily reconciliation job matches orders against Razorpay settlement reports."],
+      ["Is the price calculated on the client? Can someone tamper with it?", "No. The browser and app only send product IDs, quantities and the coupon code. The server recalculates every price, discount and delivery fee from the database before creating the Razorpay order."],
+      ["Why React Native instead of Flutter or native apps?", "React Native shares JavaScript/TypeScript and business logic with the React website and Node backend, so one developer skill set covers the whole platform, which keeps build and maintenance costs lower. Performance is more than enough for an e-commerce catalogue. Flutter is also a valid choice, but it would mean a second language (Dart)."],
+      ["How will SEO work so customers find us on Google?", "Next.js renders product, category and blog pages on the server with proper titles, meta descriptions, Open Graph tags, structured data (Product, Review, LocalBusiness schema), an XML sitemap and clean URLs (e.g. <span class='code'>/plants/red-rose-desi-gulab</span>). The blog targets local search terms such as “plant nursery near me”."],
+      ["How does offline browsing work in the app?", "The app caches the catalogue and images on the device after the first load. Without a network, customers can still browse and add to cart. Prices and stock are re-checked with the server at checkout."],
+      ["Can the system handle festival traffic peaks?", "The website is served through a CDN, product images go through Cloudinary/S3 with caching, and the API is stateless, so more instances can be added behind a load balancer. We load-test before major campaigns."],
+      ["Who owns the source code and accounts?", "The client. Code lives in a Git repository under the client's account. Domain, hosting, Razorpay, Play Store and App Store accounts are registered in the business's name, and all credentials are handed over in Phase 7."],
+      ["What are the running costs after launch?", "The main recurring items are hosting (small to start, on free or low-cost tiers, growing with traffic), domain renewal, the Apple developer fee (US$99/year), SMS/OTP and WhatsApp message charges (per message), and Razorpay transaction fees (a percentage per payment, confirmed during onboarding). A detailed monthly estimate will be shared after Phase 1, once expected order volumes are known."],
+      ["How will staff without technical knowledge use the admin panel?", "The admin panel is built for daily use on a phone or desktop. The common tasks (process orders, update stock, add a product) take three clicks or fewer. A walkthrough session and a short user guide are part of the Phase 7 handover."],
+      ["What happens after the 30-day support period?", "Bug fixes are free for 30 days after launch. After that, an optional maintenance plan can cover security updates, monitoring, backups, small changes and future-phase features."],
+    ].map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join("");
+
+    // Active TOC highlight
+    const links = [...document.querySelectorAll("#toc a")];
+    const obs = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) links.forEach((l) => l.classList.toggle("on", l.getAttribute("href") === "#" + e.target.id)); }), { rootMargin: "-20% 0px -70% 0px" });
+    document.querySelectorAll(".doc section").forEach((s) => obs.observe(s));
+  </script>
+</body>
+</html>

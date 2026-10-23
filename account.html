@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Account — Sri Venkateswara Nursery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .acct { display: grid; grid-template-columns: 240px 1fr; gap: 28px; align-items: start; }
+    .acct-nav { padding: 10px; position: sticky; top: 140px; }
+    .acct-nav a { display: flex; gap: 10px; align-items: center; padding: 11px 12px; border-radius: 10px; font-weight: 500; color: var(--ink-2); }
+    .acct-nav a:hover { background: var(--surface-2); }
+    .acct-nav a.active { background: var(--leaf-100); color: var(--forest-700); }
+    .otp { display: flex; gap: 8px; }
+    .otp input { width: 48px; height: 54px; text-align: center; font-size: 1.3rem; font-weight: 700; }
+    .login-wrap { max-width: 460px; margin: 0 auto; }
+    .order-card { padding: 20px; margin-bottom: 14px; }
+    @media (max-width: 860px) { .acct { grid-template-columns: 1fr; } .acct-nav { position: static; display: flex; overflow-x: auto; } .acct-nav a { white-space: nowrap; } }
+  </style>
+</head>
+<body>
+  <main class="section" style="padding-top:32px"><div class="container" id="root"></div></main>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    renderLayout("");
+    const root = document.getElementById("root");
+
+    /* ---------- 4.4 Login / registration with OTP ---------- */
+    function loginView() {
+      root.innerHTML = `<div class="login-wrap card card-pad" style="padding:32px">
+        <h1 style="font-size:1.9rem">Login or Sign up</h1>
+        <p class="muted">Use your mobile number or email — we'll send a one-time password. No passwords to remember.</p>
+        <div class="tabs" style="margin-bottom:18px"><button class="active" data-m="phone">Mobile number</button><button data-m="email">Email</button></div>
+        <form id="f1">
+          <div class="field"><label id="idLabel">Mobile number</label>
+            <div class="flex" style="gap:8px"><span class="input" id="cc" style="width:auto;display:grid;place-items:center">+91</span><input class="input" id="ident" required pattern="[6-9][0-9]{9}" inputmode="numeric" placeholder="10-digit mobile number"></div></div>
+          <button class="btn btn-primary btn-block">Send OTP</button>
+        </form>
+        <form id="f2" class="hide">
+          <p class="muted">Enter the 6-digit code sent to <b id="sentTo"></b> <button type="button" class="btn btn-ghost btn-sm" id="chg">Change</button></p>
+          <div class="otp" id="otp">${"<input class='input' maxlength='1' inputmode='numeric'>".repeat(6)}</div>
+          <p class="subtle" style="margin-top:10px">Demo OTP: <span class="kbd">123456</span> · Resend in <b id="timer">30</b>s</p>
+          <div class="field" id="nameField"><label>Your name (new customers)</label><input class="input" id="name" placeholder="Full name"></div>
+          <button class="btn btn-primary btn-block">Verify & Continue</button>
+        </form>
+        <p class="subtle" style="margin-top:18px;text-align:center">${icon("lock", 14)} OTP valid for 5 minutes · max 3 attempts · secured with JWT sessions</p>
+      </div>`;
+      let mode = "phone";
+      root.querySelector(".tabs").onclick = (e) => {
+        const b = e.target.closest("button"); if (!b) return; mode = b.dataset.m;
+        root.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("active", x === b));
+        const i = document.getElementById("ident");
+        document.getElementById("idLabel").textContent = mode === "phone" ? "Mobile number" : "Email address";
+        document.getElementById("cc").classList.toggle("hide", mode !== "phone");
+        i.type = mode === "phone" ? "tel" : "email"; i.pattern = mode === "phone" ? "[6-9][0-9]{9}" : ".*"; i.placeholder = mode === "phone" ? "10-digit mobile number" : "you@example.com"; i.value = "";
+      };
+      document.getElementById("f1").onsubmit = (e) => {
+        e.preventDefault();
+        const v = document.getElementById("ident").value.trim();
+        document.getElementById("sentTo").textContent = mode === "phone" ? "+91 " + v : v;
+        e.target.classList.add("hide"); document.getElementById("f2").classList.remove("hide");
+        root.querySelector("#otp input").focus();
+        toast("OTP sent (demo: 123456)", "mail");
+        let s = 30; const iv = setInterval(() => { const el = document.getElementById("timer"); if (!el || --s < 0) return clearInterval(iv); el.textContent = s; }, 1000);
+      };
+      document.getElementById("chg").onclick = () => { document.getElementById("f2").classList.add("hide"); document.getElementById("f1").classList.remove("hide"); };
+      const boxes = [...root.querySelectorAll("#otp input")];
+      boxes.forEach((b, i) => {
+        b.oninput = () => { b.value = b.value.replace(/\D/g, ""); if (b.value && boxes[i + 1]) boxes[i + 1].focus(); };
+        b.onkeydown = (e) => { if (e.key === "Backspace" && !b.value && boxes[i - 1]) boxes[i - 1].focus(); };
+        b.onpaste = (e) => { const d = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6); d.split("").forEach((c, j) => (boxes[j].value = c)); e.preventDefault(); };
+      });
+      document.getElementById("f2").onsubmit = (e) => {
+        e.preventDefault();
+        const code = boxes.map((b) => b.value).join("");
+        if (code !== "123456") { boxes.forEach((b) => b.classList.add("error")); return toast("Incorrect OTP. Please try again.", "alert"); }
+        const v = document.getElementById("ident").value.trim();
+        Store.set("user", {
+          name: document.getElementById("name").value.trim() || "Lakshmi Prasanna",
+          phone: mode === "phone" ? v : "9876543210", email: mode === "email" ? v : "lakshmi@example.com",
+          points: 240, since: "2026-03-14",
+          addresses: [{ label: "Home", name: document.getElementById("name").value.trim() || "Lakshmi Prasanna", line: "12-4-56, Gandhi Nagar", city: "Vijayawada", pin: "520003", phone: mode === "phone" ? v : "9876543210" }],
+        });
+        toast("Welcome! You're logged in.", "check");
+        if (qs("next") === "cart") location.href = "cart.html"; else dashboard();
+      };
+    }
+
+    /* ---------- Account dashboard ---------- */
+    const SAMPLE_PAST = { id: "SVN-10398", placed: "2026-09-28T10:20:00", status: "delivered", items: [{ id: 103, qty: 2, price: 179 }, { id: 502, qty: 1, price: 129 }], total: 547, pay: "upi", paid: true, date: "2026-09-30", slot: "Morning (8 AM – 12 PM)", addr: { name: "Lakshmi Prasanna", line: "12-4-56, Gandhi Nagar", city: "Vijayawada", pin: "520003" } };
+    const sections = [["overview", "user", "Overview"], ["orders", "box", "My Orders"], ["wishlist", "heart", "Wishlist"], ["addresses", "map", "Address Book"], ["profile", "edit", "Profile"], ["loyalty", "gift", "Loyalty Points"]];
+
+    function dashboard() {
+      const u = Store.user();
+      const tab = (location.hash || "#overview").slice(1);
+      root.innerHTML = `<div class="flex between wrap" style="margin-bottom:22px"><div><span class="eyebrow">My Account</span><h1 style="font-size:2rem;margin:0">Namaste, ${esc(u.name.split(" ")[0])} 🌿</h1></div>
+        <button class="btn btn-outline btn-sm" id="logout">${icon("logout", 16)} Log out</button></div>
+        <div class="acct"><nav class="card acct-nav">${sections.map(([k, ic, l]) => `<a href="#${k}" class="${k === tab ? "active" : ""}">${icon(ic, 18)} ${l}</a>`).join("")}</nav>
+        <section id="pane"></section></div>`;
+      document.getElementById("logout").onclick = () => { Store.set("user", null); location.hash = ""; loginView(); };
+      const pane = document.getElementById("pane");
+      const orders = [...Store.orders(), SAMPLE_PAST];
+      const renderers = {
+        overview() {
+          pane.innerHTML = `<div class="grid grid-3" style="margin-bottom:20px">
+            <div class="card card-pad"><div class="subtle">Total orders</div><div style="font-family:var(--font-display);font-size:2rem">${orders.length}</div></div>
+            <div class="card card-pad"><div class="subtle">Wishlist items</div><div style="font-family:var(--font-display);font-size:2rem">${Store.wish().length}</div></div>
+            <div class="card card-pad"><div class="subtle">Loyalty points <span class="phase-tag">Phase 2</span></div><div style="font-family:var(--font-display);font-size:2rem">${u.points}</div></div></div>
+            <h3>Latest order</h3>${orderCard(orders[0])}`;
+        },
+        orders() { pane.innerHTML = `<h2 style="font-size:1.5rem">Order history & tracking</h2>${orders.map(orderCard).join("")}`; },
+        wishlist() {
+          const items = Store.wish().map(byId).filter(Boolean);
+          pane.innerHTML = `<h2 style="font-size:1.5rem">Wishlist</h2>` + (items.length ? `<p class="subtle">We'll notify you when out-of-stock items are back, and when prices drop.</p><div class="products" style="grid-template-columns:repeat(3,1fr)">${items.map(productCard).join("")}</div>`
+            : `<div class="card empty-state">${icon("heart", 36)}<h3 style="margin-top:10px">No saved items yet</h3><p>Tap the heart on any product to save it here.</p><a class="btn btn-primary" href="shop.html">Browse plants</a></div>`);
+        },
+        addresses() {
+          pane.innerHTML = `<div class="flex between"><h2 style="font-size:1.5rem;margin:0">Address book</h2><button class="btn btn-primary btn-sm" id="addAddr">${icon("plus", 16)} Add address</button></div>
+            <div class="grid grid-2" style="margin-top:16px">${u.addresses.map((a, i) => `<div class="card card-pad"><span class="tag tag-green">${esc(a.label)}</span>${i === 0 ? ' <span class="tag tag-gray">Default</span>' : ""}
+              <p style="margin:10px 0 4px"><b>${esc(a.name)}</b></p><p class="muted" style="margin:0">${esc(a.line)}<br>${esc(a.city)} – ${a.pin}<br>${a.phone}</p>
+              <div class="flex" style="margin-top:12px"><button class="btn btn-ghost btn-sm" data-del="${i}">${icon("trash", 16)} Remove</button></div></div>`).join("")}</div>`;
+          pane.querySelectorAll("[data-del]").forEach((b) => (b.onclick = () => { u.addresses.splice(+b.dataset.del, 1); Store.set("user", u); renderers.addresses(); }));
+          document.getElementById("addAddr").onclick = () => {
+            const m = openModal("Add address", `<form id="af">
+              <div class="form-row"><div class="field"><label>Label</label><select class="input" name="label"><option>Home</option><option>Office</option><option>Other</option></select></div><div class="field"><label>Full name</label><input class="input" name="name" required></div></div>
+              <div class="field"><label>Address</label><input class="input" name="line" required></div>
+              <div class="form-row"><div class="field"><label>City</label><input class="input" name="city" required></div><div class="field"><label>Pin code</label><input class="input" name="pin" required pattern="[0-9]{6}"></div></div>
+              <div class="field"><label>Mobile</label><input class="input" name="phone" required pattern="[6-9][0-9]{9}"></div></form>`,
+              `<button class="btn btn-outline" data-close>Cancel</button><button class="btn btn-primary" id="saveA">Save address</button>`);
+            m.querySelector("#saveA").onclick = () => { const f = m.querySelector("#af"); if (!f.reportValidity()) return; u.addresses.push(Object.fromEntries(new FormData(f))); Store.set("user", u); closeModal(); renderers.addresses(); toast("Address saved"); };
+          };
+        },
+        profile() {
+          pane.innerHTML = `<div class="card card-pad"><h2 style="font-size:1.5rem">Profile</h2><form id="pf">
+            <div class="form-row"><div class="field"><label>Full name</label><input class="input" name="name" value="${esc(u.name)}"></div><div class="field"><label>Mobile</label><input class="input" name="phone" value="${esc(u.phone)}"></div></div>
+            <div class="form-row"><div class="field"><label>Email</label><input class="input" name="email" type="email" value="${esc(u.email)}"></div><div class="field"><label>Member since</label><input class="input" disabled value="${fmtDate(u.since)}"></div></div>
+            <h4 style="font-family:var(--font-body);margin-top:10px">Communication preferences</h4>
+            <label class="check"><input type="checkbox" checked> Order updates on WhatsApp</label><label class="check"><input type="checkbox" checked> Festival offers by email</label><label class="check"><input type="checkbox"> Plant-care reminders by SMS</label>
+            <button class="btn btn-primary" style="margin-top:14px">Save changes</button></form></div>`;
+          document.getElementById("pf").onsubmit = (e) => { e.preventDefault(); Object.assign(u, Object.fromEntries(new FormData(e.target))); Store.set("user", u); toast("Profile updated"); };
+        },
+        loyalty() {
+          pane.innerHTML = `<div class="card card-pad"><span class="phase-tag">Optional · Phase 2</span><h2 style="font-size:1.5rem;margin-top:10px">Green Points</h2>
+            <p class="muted">Earn 1 point for every ₹10 spent. Redeem 100 points = ₹10 off on your next order.</p>
+            <div style="font-family:var(--font-display);font-size:3rem;color:var(--forest-700)">${u.points} <span style="font-size:1rem;color:var(--ink-3)">points · worth ${inr(u.points / 10)}</span></div>
+            <div class="rating-bars" style="margin-top:12px"><div class="row" style="grid-template-columns:80px 1fr 80px"><span>Silver</span><div class="bar"><i style="width:${Math.min(100, u.points / 5)}%;background:var(--leaf-500)"></i></div><span class="subtle">Gold at 500</span></div></div></div>`;
+        },
+      };
+      (renderers[tab] || renderers.overview)();
+    }
+
+    function orderCard(o) {
+      const steps = ["new", "processing", "dispatched", "out", "delivered"];
+      const idx = o.status === "delivered" ? 4 : steps.indexOf(o.status);
+      const label = { new: "Placed", processing: "Confirmed", dispatched: "Dispatched", out: "Out for delivery", delivered: "Delivered" }[o.status];
+      return `<div class="card order-card">
+        <div class="flex between wrap"><div><b>${o.id}</b> <span class="subtle">· ${fmtDate(o.placed)}</span></div><span class="status st-${o.status === "out" ? "dispatched" : o.status}">${label}</span></div>
+        <div class="flex wrap" style="margin-top:12px;gap:10px">${o.items.map((i) => { const p = byId(i.id); return `<a href="product.html?id=${p.id}" class="flex" style="gap:8px;background:var(--surface-2);border-radius:10px;padding:6px 10px 6px 6px"><span style="width:40px;height:40px;border-radius:8px;overflow:hidden">${plantArt(p.art)}</span><span style="font-size:.85rem">${esc(p.name)} × ${i.qty}</span></a>`; }).join("")}</div>
+        <div class="track">${["Placed", "Confirmed", "Dispatched", "Out for delivery", "Delivered"].map((s, i) => `<div class="${i <= idx ? "on" : ""}">${s}</div>`).join("")}</div>
+        <div class="flex between wrap" style="margin-top:10px"><span class="subtle">${o.status === "delivered" ? "Delivered on" : "Expected"} ${fmtDate(o.date)} · ${o.paid ? "Paid online" : "Cash on Delivery"}</span><b>${inr(o.total)}</b></div>
+        <div class="flex wrap" style="margin-top:12px;gap:8px">
+          <button class="btn btn-outline btn-sm" onclick="toast('Invoice PDF will download in production','download')">${icon("download", 16)} Invoice</button>
+          ${o.status === "delivered" ? `<button class="btn btn-outline btn-sm" data-again="${o.items.map((i) => i.id + ":" + i.qty).join(",")}">${icon("refresh", 16)} Buy again</button><a class="btn btn-outline btn-sm" href="product.html?id=${o.items[0].id}#reviews">${icon("star", 16)} Rate & review</a>` : `<a class="btn btn-ghost btn-sm" href="https://wa.me/${STORE.whatsapp}" target="_blank" rel="noopener">${icon("chat", 16)} Need help?</a>`}
+        </div></div>`;
+    }
+
+    document.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-again]"); if (!b) return;
+      b.dataset.again.split(",").forEach((x) => { const [id, q] = x.split(":"); Store.addToCart(+id, +q); });
+    });
+    window.addEventListener("hashchange", () => Store.user() && dashboard());
+    Store.user() ? dashboard() : loginView();
+  </script>
+</body>
+</html>

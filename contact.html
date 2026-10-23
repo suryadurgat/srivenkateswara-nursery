@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact & Store Info — Sri Venkateswara Nursery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="page-head"><div class="container">
+    <div class="crumbs"><a href="home.html">Home</a> / Contact</div>
+    <h1>Visit or contact the nursery</h1>
+    <p class="muted" style="margin:0">Questions about a plant, an order or a bulk requirement? We're happy to help.</p>
+  </div></div>
+
+  <main class="section" style="padding-top:32px">
+    <div class="container">
+      <div class="grid grid-4" id="cards"></div>
+
+      <div class="grid grid-2" style="margin-top:28px;align-items:start">
+        <div>
+          <div class="map-ph" role="img" aria-label="Map showing nursery location">
+            <div class="road1"></div><div class="road2"></div>
+            <div class="pin" id="pin"></div>
+            <div class="map-label"><b>Sri Venkateswara Nursery</b><div class="subtle">Google Maps embed · live map in production</div></div>
+          </div>
+          <div class="flex wrap" style="margin-top:12px">
+            <a class="btn btn-primary btn-sm" href="https://www.google.com/maps" target="_blank" rel="noopener" id="dir">Get directions</a>
+            <span class="subtle">Free parking · Wheelchair accessible</span>
+          </div>
+          <div class="card card-pad" style="margin-top:20px">
+            <h3 class="flex" style="gap:8px" id="hoursTitle">Working hours</h3>
+            <div id="hours"></div>
+            <div id="openNow" style="margin-top:10px"></div>
+          </div>
+        </div>
+
+        <form class="card card-pad" id="cf">
+          <h2 style="font-size:1.6rem">Send us an enquiry</h2>
+          <div class="form-row">
+            <div class="field"><label>Name</label><input class="input" name="name" required></div>
+            <div class="field"><label>Mobile</label><input class="input" name="phone" required pattern="[6-9][0-9]{9}"></div>
+          </div>
+          <div class="field"><label>Email (optional)</label><input class="input" type="email" name="email"></div>
+          <div class="field"><label>Topic</label><select class="input" name="topic"><option>Product enquiry</option><option>Order / delivery issue</option><option>Bulk / event order</option><option>Landscaping & garden setup</option><option>Feedback</option></select></div>
+          <div class="field"><label>Message</label><textarea class="input" name="msg" required placeholder="How can we help?"></textarea></div>
+          <button class="btn btn-primary btn-block">Send message</button>
+          <p class="subtle" style="text-align:center;margin:10px 0 0">We usually reply within 2 working hours.</p>
+        </form>
+      </div>
+
+      <section class="section" style="padding-bottom:0">
+        <div class="section-head"><div><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div></div>
+        <div class="grid grid-2" id="faq"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    renderLayout("contact");
+    document.getElementById("pin").innerHTML = icon("map", 44, 2);
+    document.getElementById("hoursTitle").insertAdjacentHTML("afterbegin", icon("clock"));
+    document.getElementById("cards").innerHTML = [
+      ["map", "Visit us", STORE.address, null],
+      ["phone", "Call us", STORE.phone, "tel:" + STORE.phone.replace(/\s/g, "")],
+      ["chat", "WhatsApp", "Chat with us for quick help", "https://wa.me/" + STORE.whatsapp],
+      ["mail", "Email", STORE.email, "mailto:" + STORE.email],
+    ].map(([i, t, d, h]) => `<${h ? `a href="${h}" ${h.startsWith("http") ? 'target="_blank" rel="noopener"' : ""}` : "div"} class="card card-pad"><div class="feature"><span class="ico">${icon(i)}</span><div><b>${t}</b><p>${d}</p></div></div></${h ? "a" : "div"}>`).join("");
+    document.getElementById("hours").innerHTML = STORE.hours.map(([d, h]) => `<div class="sum-row"><span>${d}</span><b>${h}</b></div>`).join("");
+    const now = new Date(), hr = now.getHours() + now.getMinutes() / 60, sun = now.getDay() === 0;
+    const open = sun ? hr >= 7 && hr < 13 : hr >= 7 && hr < 19.5;
+    document.getElementById("openNow").innerHTML = `<span class="status ${open ? "st-delivered" : "st-cancelled"}">${open ? "Open now" : "Closed now"}</span>`;
+    document.getElementById("faq").innerHTML = [
+      ["How are plants packed for delivery?", "Each plant is secured in its pot, wrapped to protect leaves and packed upright in a ventilated box."],
+      ["What if my plant arrives damaged?", "Share a photo within 48 hours of delivery and we'll replace it free of charge (7-day replacement policy)."],
+      ["Do you deliver outside the city?", "Yes — enter your pin code on any product page to see delivery availability and estimated time."],
+      ["Can I pay cash on delivery?", "Yes, COD is available for orders up to ₹5,000. You can also pay by UPI at the doorstep."],
+      ["Do you offer bulk discounts?", "Yes — 10% to 20%+ off depending on quantity. Use the Bulk & Event Orders page to request a quote."],
+      ["Can I pick up my order from the nursery?", "Yes — WhatsApp us your order number and collect it from the nursery during working hours."],
+    ].map(([q, a]) => `<details class="card card-pad" style="padding:18px 20px"><summary style="font-weight:600;cursor:pointer">${q}</summary><p class="muted" style="margin:10px 0 0">${a}</p></details>`).join("");
+    document.getElementById("cf").onsubmit = (e) => {
+      e.preventDefault();
+      e.target.innerHTML = `<div style="text-align:center;padding:30px 8px"><div style="width:64px;height:64px;border-radius:50%;background:var(--ok-bg);color:var(--ok);display:grid;place-items:center;margin:0 auto 14px">${icon("check", 30, 2.4)}</div><h3>Message sent</h3><p class="muted">Thank you — our team will get back to you shortly. Your enquiry is now visible in the nursery admin panel.</p></div>`;
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Panel — Sri Venkateswara Nursery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    body { background: #f4f5f1; }
+    .adm { display: grid; grid-template-columns: 248px 1fr; min-height: calc(100vh - 34px); }
+    .side { background: var(--forest-900); color: #b8cfc0; padding: 18px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    .side .brand { padding: 4px 8px 18px; }
+    .side .brand-name { color: #fff; }
+    .side .brand-name small { color: #87a593; }
+    .side h5 { font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: #6f8f7c; margin: 16px 10px 6px; font-weight: 600; }
+    .side a { display: flex; align-items: center; gap: 11px; padding: 9px 10px; border-radius: 9px; font-size: .9rem; font-weight: 500; }
+    .side a:hover { background: rgba(255,255,255,.06); color: #fff; }
+    .side a.active { background: rgba(95,167,124,.18); color: #fff; }
+    .side a .n { margin-left: auto; background: var(--terracotta); color: #fff; border-radius: 9px; font-size: .7rem; font-weight: 700; padding: 1px 7px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 28px; background: #fff; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 20; }
+    .topbar h1 { font-size: 1.45rem; margin: 0; }
+    .content { padding: 24px 28px 60px; }
+    .kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 20px; }
+    .kpi { padding: 18px; }
+    .kpi .lbl { font-size: .8rem; color: var(--ink-3); display: flex; align-items: center; gap: 6px; }
+    .kpi .val { font-family: var(--font-display); font-size: 1.9rem; line-height: 1.1; margin: 6px 0 4px; }
+    .kpi .delta { font-size: .78rem; font-weight: 600; }
+    .up { color: var(--ok); } .down { color: var(--crit); }
+    .panel { padding: 20px; }
+    .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .panel-head h3 { margin: 0; font-size: 1.1rem; }
+    .chart { position: relative; }
+    .chart .tip { position: absolute; pointer-events: none; background: var(--forest-900); color: #fff; font-size: .8rem; padding: 6px 10px; border-radius: 8px; white-space: nowrap; transform: translate(-50%, -110%); opacity: 0; transition: opacity .1s; }
+    .chart rect.bar { fill: var(--leaf-500); transition: fill .12s; }
+    .chart g.col:hover rect.bar { fill: var(--forest-700); }
+    .chart text { font: 500 11px var(--font-body); fill: var(--ink-3); }
+    .hbar { display: grid; grid-template-columns: 130px 1fr 80px; gap: 12px; align-items: center; font-size: .86rem; padding: 6px 0; }
+    .hbar .track2 { height: 10px; background: var(--surface-2); border-radius: 0 5px 5px 0; }
+    .hbar .track2 i { display: block; height: 100%; background: var(--leaf-500); border-radius: 0 4px 4px 0; }
+    .seg { display: inline-flex; background: var(--surface-2); border-radius: 10px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+    .seg button { border: 0; background: transparent; padding: 7px 12px; border-radius: 8px; font-size: .82rem; font-weight: 600; color: var(--ink-2); cursor: pointer; }
+    .seg button.active { background: #fff; color: var(--forest-700); box-shadow: var(--shadow-sm); }
+    .tbl select { height: 32px; border-radius: 8px; border: 1px solid var(--line-strong); padding: 0 8px; font-size: .82rem; background: #fff; }
+    .thumb-sm { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
+    .switch { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .switch span { position: absolute; inset: 0; background: var(--line-strong); border-radius: 11px; cursor: pointer; transition: background .15s; }
+    .switch span::before { content: ""; position: absolute; width: 16px; height: 16px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform .15s; }
+    .switch input:checked + span { background: var(--leaf-500); }
+    .switch input:checked + span::before { transform: translateX(18px); }
+    .login-bg { min-height: calc(100vh - 34px); display: grid; place-items: center; padding: 20px; background: linear-gradient(140deg, var(--forest-900), var(--forest-700)); }
+    .mob-menu { display: none; }
+    @media (max-width: 1100px) { .kpis { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 860px) {
+      .adm { grid-template-columns: 1fr; }
+      .side { position: fixed; left: 0; top: 0; z-index: 100; width: 260px; transform: translateX(-100%); transition: transform .2s; }
+      .side.open { transform: none; box-shadow: var(--shadow-lg); }
+      .mob-menu { display: grid; }
+      .content, .topbar { padding-left: 16px; padding-right: 16px; }
+      .kpis { grid-template-columns: repeat(2, 1fr); }
+      .hbar { grid-template-columns: 90px 1fr 64px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="proto-ribbon"><div class="container">
+    <span><span class="dot-live"></span><strong>Reference Prototype v0.1</strong> · Admin Panel (Nursery Owner Dashboard) — sample data</span>
+    <nav><a href="index.html">Presentation</a><a href="overview.html">Project Blueprint</a><a href="home.html">Customer Website</a><a href="admin.html" class="active">Admin Panel</a><a href="mobile-app.html">Mobile App</a></nav>
+  </div></div>
+  <div id="app"></div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    const app = document.getElementById("app");
+    const STATUS = { new: "New", processing: "Processing", dispatched: "Dispatched", delivered: "Delivered", cancelled: "Cancelled" };
+    const statusPill = (s) => `<span class="status st-${s}">${STATUS[s] || s}</span>`;
+    const A = {
+      orders: Store.get("adm_orders", null) || ADMIN_ORDERS.map((o) => ({ ...o })),
+      quotes: Store.get("adm_quotes", null) || ADMIN_QUOTES.map((q) => ({ ...q })),
+      fests: Store.get("adm_fests", null) || FESTIVALS.map((f) => ({ ...f })),
+      threshold: Store.get("adm_threshold", 10),
+      posts: Store.get("adm_posts", null) || POSTS.map((p) => ({ id: p.id, title: p.title, cat: p.cat, date: p.date, status: "Published" })),
+    };
+    // Orders placed on the storefront during the demo appear here automatically
+    Store.orders().forEach((o) => {
+      if (!A.orders.find((x) => x.id === o.id)) A.orders.unshift({ id: o.id, date: o.placed.slice(0, 16).replace("T", " "), customer: o.addr.name, phone: o.addr.phone || "—", items: o.items.reduce((s, i) => s + i.qty, 0), total: o.total, pay: { upi: "UPI", card: "Card", netbanking: "Net Banking", cod: "COD" }[o.pay], status: "new", city: o.addr.city, fromSite: true, lines: o.items, slot: o.slot, deliveryDate: o.date });
+    });
+    const save = () => { Store.set("adm_orders", A.orders); Store.set("adm_quotes", A.quotes); Store.set("adm_fests", A.fests); Store.set("adm_threshold", A.threshold); Store.set("adm_posts", A.posts); Store.set("products", PRODUCTS); };
+
+    /* ---------- Admin login ---------- */
+    function login() {
+      app.innerHTML = `<div class="login-bg"><form class="card card-pad" id="lf" style="width:100%;max-width:420px;padding:32px">
+        <div class="brand" style="margin-bottom:20px">${BRAND_MARK}<span class="brand-name">Sri Venkateswara<small>Admin Panel</small></span></div>
+        <h2 style="font-size:1.6rem">Staff sign in</h2>
+        <p class="muted">Secure access for the nursery owner and staff. Role-based permissions apply.</p>
+        <div class="field"><label>Email or mobile</label><input class="input" name="u" value="owner@svnursery.in" required></div>
+        <div class="field"><label>Password</label><input class="input" type="password" name="p" value="demo1234" required></div>
+        <div class="field"><label>Sign in as (demo)</label><select class="input" name="role"><option value="Owner">Owner — full access</option><option value="Staff">Staff — orders & inventory only</option></select></div>
+        <button class="btn btn-primary btn-block">Sign in</button>
+        <p class="subtle" style="text-align:center;margin:14px 0 0">${icon("lock", 14)} Production: password + OTP 2-step verification, auto-logout after inactivity</p>
+      </form></div>`;
+      document.getElementById("lf").onsubmit = (e) => { e.preventDefault(); Store.set("adm_role", e.target.role.value); shell(); };
+    }
+
+    /* ---------- Shell ---------- */
+    // ?embed=1 previews the dashboard as Owner without signing in (presentation page)
+    const role = () => Store.get("adm_role", null) || (qs("embed") ? "Owner" : null);
+    const NAV = [
+      ["Overview", [["dashboard", "chart", "Dashboard"], ["reports", "file", "Sales Reports"]]],
+      ["Commerce", [["orders", "box", "Orders"], ["products", "leaf", "Products & Categories"], ["inventory", "layers", "Inventory & Stock"], ["quotes", "gift", "Bulk / Event Quotes"]]],
+      ["Marketing", [["promotions", "tag", "Festival Offers & Coupons"], ["blog", "edit", "Blog / Care Tips"]]],
+      ["People", [["customers", "users", "Customers"], ["settings", "settings", "Settings & Staff"]]],
+    ];
+    const OWNER_ONLY = ["reports", "promotions", "blog", "customers", "settings", "dashboard"];
+    function shell() {
+      const r = role();
+      let tab = (location.hash || "#" + (r === "Staff" ? "orders" : "dashboard")).slice(1);
+      if (r === "Staff" && OWNER_ONLY.includes(tab)) tab = "orders";
+      const counts = { orders: A.orders.filter((o) => o.status === "new").length, quotes: A.quotes.filter((q) => q.status === "new").length, inventory: PRODUCTS.filter((p) => p.stock <= A.threshold).length };
+      const title = NAV.flatMap((g) => g[1]).find((n) => n[0] === tab)?.[2] || "Dashboard";
+      app.innerHTML = `<div class="adm">
+        <aside class="side" id="side">
+          <a href="#dashboard" class="brand" style="padding:4px 8px 18px">${BRAND_MARK}<span class="brand-name">Sri Venkateswara<small>Admin Panel</small></span></a>
+          ${NAV.map(([g, items]) => `<h5>${g}</h5>${items.map(([k, ic, l]) => {
+            const locked = r === "Staff" && OWNER_ONLY.includes(k);
+            return `<a href="${locked ? "javascript:void 0" : "#" + k}" class="${k === tab ? "active" : ""}" ${locked ? 'style="opacity:.4" title="Owner only"' : ""}>${icon(ic, 18)} ${l}${counts[k] ? `<span class="n">${counts[k]}</span>` : ""}${locked ? icon("lock", 13) : ""}</a>`;
+          }).join("")}`).join("")}
+          <h5>Session</h5>
+          <a href="home.html" target="_blank">${icon("eye", 18)} View storefront</a>
+          <a href="javascript:void 0" id="out">${icon("logout", 18)} Sign out</a>
+        </aside>
+        <div>
+          <div class="topbar">
+            <div class="flex"><button class="icon-btn mob-menu" id="mm" aria-label="Menu">${icon("menu")}</button><h1>${title}</h1></div>
+            <div class="flex">
+              <button class="icon-btn" id="bell" aria-label="Notifications">${icon("bell")}<span class="badge-count">${counts.orders + counts.quotes + counts.inventory}</span></button>
+              <div class="flex" style="gap:10px"><span class="avatar">${r === "Owner" ? "SV" : "ST"}</span><div style="line-height:1.2"><b style="font-size:.9rem">${r === "Owner" ? "Satish Vinti" : "Store Staff"}</b><div class="subtle" style="font-size:.76rem">${r}</div></div></div>
+            </div>
+          </div>
+          <div class="content" id="content"></div>
+        </div></div>`;
+      document.getElementById("out").onclick = () => { Store.set("adm_role", null); location.hash = ""; login(); };
+      document.getElementById("mm").onclick = () => document.getElementById("side").classList.toggle("open");
+      document.getElementById("bell").onclick = () => openModal("Notifications", `
+        ${A.orders.filter((o) => o.status === "new").map((o) => `<div class="sum-row"><span>${icon("box", 16)} New order <b>${o.id}</b> — ${esc(o.customer)}</span><span>${inr(o.total)}</span></div>`).join("")}
+        ${A.quotes.filter((q) => q.status === "new").map((q) => `<div class="sum-row"><span>${icon("gift", 16)} Bulk quote request <b>${q.id}</b> — ${q.event}</span><span>${q.qty} units</span></div>`).join("")}
+        ${PRODUCTS.filter((p) => p.stock <= A.threshold).map((p) => `<div class="sum-row"><span>${icon("alert", 16)} Low stock: ${esc(p.name)}</span><b style="color:${p.stock ? "var(--serious)" : "var(--crit)"}">${p.stock} left</b></div>`).join("")}`);
+      (VIEWS[tab] || VIEWS.dashboard)(document.getElementById("content"));
+    }
+    window.addEventListener("hashchange", () => role() && shell());
+
+    /* ---------- Views ---------- */
+    const VIEWS = {
+      dashboard(el) {
+        const today = A.orders.filter((o) => o.date.startsWith("2026-10-23") || o.fromSite);
+        const lows = PRODUCTS.filter((p) => p.stock <= A.threshold);
+        el.innerHTML = `
+          <div class="kpis">
+            ${kpi("cash", "Revenue this month", inr(MONTHLY_REVENUE.at(-1).v), "▲ 34% vs Sep", "up")}
+            ${kpi("box", "Orders today", today.length, "▲ 3 vs yesterday", "up")}
+            ${kpi("clock", "Pending to process", A.orders.filter((o) => ["new", "processing"].includes(o.status)).length, "Needs action", "")}
+            ${kpi("alert", "Low-stock items", lows.length, `Threshold ≤ ${A.threshold}`, "down")}
+            ${kpi("gift", "New bulk quotes", A.quotes.filter((q) => q.status === "new").length, "Respond within 24h", "")}
+          </div>
+          <div class="grid" style="grid-template-columns:1.6fr 1fr;gap:16px" id="dRow">
+            <div class="card panel"><div class="panel-head"><h3>Monthly revenue</h3><span class="subtle">May – Oct 2026 · ₹</span></div><div class="chart" id="rev"></div></div>
+            <div class="card panel"><div class="panel-head"><h3>Sales by category</h3><span class="subtle">October</span></div>${catBars()}</div>
+          </div>
+          <div class="grid" style="grid-template-columns:1.6fr 1fr;gap:16px;margin-top:16px" id="dRow2">
+            <div class="card panel"><div class="panel-head"><h3>Recent orders</h3><a href="#orders" class="btn btn-ghost btn-sm">View all →</a></div>
+              <div class="table-wrap"><table class="tbl"><thead><tr><th>Order</th><th>Customer</th><th class="num">Total</th><th>Payment</th><th>Status</th></tr></thead><tbody>
+              ${A.orders.slice(0, 6).map((o) => `<tr><td><b>${o.id}</b>${o.fromSite ? ' <span class="tag tag-gold">Live demo</span>' : ""}<div class="subtle">${o.date}</div></td><td>${esc(o.customer)}<div class="subtle">${o.city}</div></td><td class="num">${inr(o.total)}</td><td>${o.pay}</td><td>${statusPill(o.status)}</td></tr>`).join("")}
+              </tbody></table></div></div>
+            <div class="card panel"><div class="panel-head"><h3>Low-stock alerts</h3><a href="#inventory" class="btn btn-ghost btn-sm">Manage →</a></div>
+              ${lows.length ? lows.map((p) => `<div class="flex" style="padding:8px 0;border-bottom:1px solid var(--line)"><span class="thumb-sm">${plantArt(p.art)}</span><div style="flex:1;min-width:0"><div style="font-weight:600;font-size:.88rem">${esc(p.name)}</div><div class="subtle">${catName(p.cat)}</div></div>${p.stock ? `<span class="status st-dispatched">${p.stock} left</span>` : `<span class="status st-cancelled">Out of stock</span>`}</div>`).join("") : `<p class="muted">All products are above the threshold.</p>`}
+            </div>
+          </div>`;
+        revenueChart(document.getElementById("rev"));
+      },
+
+      orders(el) {
+        let filter = "all", q = "";
+        el.innerHTML = `<div class="card panel">
+          <div class="panel-head"><div class="seg" id="seg">${["all", ...Object.keys(STATUS)].map((s) => `<button data-s="${s}" class="${s === "all" ? "active" : ""}">${s === "all" ? "All" : STATUS[s]} <span class="subtle">${s === "all" ? A.orders.length : A.orders.filter((o) => o.status === s).length}</span></button>`).join("")}</div>
+            <div class="flex"><input class="input" id="oq" placeholder="Search order ID or customer" style="width:240px;min-height:38px;height:38px"><button class="btn btn-outline btn-sm" id="csv">${icon("download", 16)} Export CSV</button></div></div>
+          <div class="table-wrap"><table class="tbl"><thead><tr><th>Order ID</th><th>Date</th><th>Customer</th><th class="num">Items</th><th class="num">Total</th><th>Payment</th><th>Status</th><th>Update status</th><th></th></tr></thead><tbody id="ob"></tbody></table></div>
+          <p class="subtle" style="margin:12px 0 0">Changing status automatically notifies the customer by SMS, WhatsApp and app push notification.</p></div>`;
+        const paint = () => {
+          const rows = A.orders.filter((o) => (filter === "all" || o.status === filter) && (!q || (o.id + o.customer).toLowerCase().includes(q)));
+          document.getElementById("ob").innerHTML = rows.map((o) => `<tr>
+            <td><b>${o.id}</b>${o.fromSite ? ' <span class="tag tag-gold">Live demo</span>' : ""}</td><td class="subtle">${o.date}</td><td>${esc(o.customer)}<div class="subtle">${o.city}</div></td>
+            <td class="num">${o.items}</td><td class="num"><b>${inr(o.total)}</b></td><td>${o.pay}${o.pay === "COD" ? ' <span class="tag tag-gray">Collect</span>' : ""}</td><td>${statusPill(o.status)}</td>
+            <td><select data-o="${o.id}">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}" ${k === o.status ? "selected" : ""}>${v}</option>`).join("")}</select></td>
+            <td><button class="btn btn-ghost btn-sm" data-view="${o.id}">${icon("eye", 16)}</button></td></tr>`).join("") || `<tr><td colspan="9" class="muted" style="text-align:center;padding:30px">No orders found</td></tr>`;
+        };
+        paint();
+        document.getElementById("seg").onclick = (e) => { const b = e.target.closest("button"); if (!b) return; filter = b.dataset.s; document.querySelectorAll("#seg button").forEach((x) => x.classList.toggle("active", x === b)); paint(); };
+        document.getElementById("oq").oninput = (e) => { q = e.target.value.toLowerCase(); paint(); };
+        el.onchange = (e) => {
+          const s = e.target.closest("[data-o]"); if (!s) return;
+          const o = A.orders.find((x) => x.id === s.dataset.o); o.status = s.value; save(); paint();
+          toast(`${o.id} → ${STATUS[o.status]} · customer notified`, "bell");
+        };
+        el.onclick = (e) => {
+          const v = e.target.closest("[data-view]"); if (v) orderDetail(A.orders.find((x) => x.id === v.dataset.view));
+          if (e.target.closest("#csv")) downloadCSV("orders.csv", [["Order ID", "Date", "Customer", "City", "Items", "Total", "Payment", "Status"], ...A.orders.map((o) => [o.id, o.date, o.customer, o.city, o.items, o.total, o.pay, STATUS[o.status]])]);
+        };
+      },
+
+      products(el) {
+        let cat = "all";
+        el.innerHTML = `<div class="card panel">
+          <div class="panel-head"><div class="seg" id="pc">${[["all", "All"], ...CATEGORIES.map((c) => [c.id, c.name])].map(([k, l]) => `<button data-c="${k}" class="${k === "all" ? "active" : ""}">${l}</button>`).join("")}</div>
+            <div class="flex"><button class="btn btn-outline btn-sm" id="catBtn">${icon("layers", 16)} Categories</button><button class="btn btn-primary btn-sm" id="addP">${icon("plus", 16)} Add product</button></div></div>
+          <div class="table-wrap"><table class="tbl"><thead><tr><th>Product</th><th>Category</th><th class="num">Price</th><th class="num">MRP</th><th class="num">Stock</th><th>Visibility</th><th></th></tr></thead><tbody id="pb"></tbody></table></div></div>`;
+        const paint = () => {
+          document.getElementById("pb").innerHTML = PRODUCTS.filter((p) => cat === "all" || p.cat === cat).map((p) => `<tr>
+            <td><div class="flex"><span class="thumb-sm">${plantArt(p.art)}</span><div><b>${esc(p.name)}</b><div class="subtle">SKU SVN-${p.id}</div></div></div></td>
+            <td>${catName(p.cat)}</td><td class="num">${inr(p.price)}</td><td class="num subtle">${inr(p.mrp)}</td>
+            <td class="num">${p.stock === 0 ? '<span class="status st-cancelled">0</span>' : p.stock <= A.threshold ? `<span class="status st-dispatched">${p.stock}</span>` : p.stock}</td>
+            <td><label class="switch"><input type="checkbox" ${p.hidden ? "" : "checked"} data-vis="${p.id}"><span></span></label></td>
+            <td style="white-space:nowrap"><button class="btn btn-ghost btn-sm" data-edit="${p.id}">${icon("edit", 16)}</button><button class="btn btn-ghost btn-sm" data-del="${p.id}" style="color:var(--crit)">${icon("trash", 16)}</button></td></tr>`).join("");
+        };
+        paint();
+        document.getElementById("pc").onclick = (e) => { const b = e.target.closest("button"); if (!b) return; cat = b.dataset.c; document.querySelectorAll("#pc button").forEach((x) => x.classList.toggle("active", x === b)); paint(); };
+        document.getElementById("addP").onclick = () => productForm(null, paint);
+        document.getElementById("catBtn").onclick = () => openModal("Categories", `${CATEGORIES.map((c) => `<div class="flex" style="padding:8px 0;border-bottom:1px solid var(--line)"><span class="thumb-sm">${plantArt(c.art)}</span><div style="flex:1"><b>${c.name}</b><div class="subtle">${PRODUCTS.filter((p) => p.cat === c.id).length} products</div></div><button class="btn btn-ghost btn-sm">${icon("edit", 16)}</button></div>`).join("")}
+          <div class="flex" style="margin-top:14px"><input class="input" placeholder="New category name"><button class="btn btn-primary btn-sm" style="height:44px" onclick="toast('Category added (demo)')">Add</button></div>`);
+        el.onclick = (e) => {
+          const ed = e.target.closest("[data-edit]"); if (ed) productForm(byId(ed.dataset.edit), paint);
+          const d = e.target.closest("[data-del]");
+          if (d) { const p = byId(d.dataset.del); const m = openModal("Delete product?", `<p>Remove <b>${esc(p.name)}</b> from the catalogue? It will no longer be visible to customers.</p>`, `<button class="btn btn-outline" data-close>Cancel</button><button class="btn btn-accent" id="yes">Delete</button>`);
+            m.querySelector("#yes").onclick = () => { PRODUCTS.splice(PRODUCTS.indexOf(p), 1); save(); closeModal(); paint(); toast("Product deleted"); }; }
+        };
+        el.onchange = (e) => { const v = e.target.closest("[data-vis]"); if (v) { byId(v.dataset.vis).hidden = !v.checked; save(); toast(v.checked ? "Product visible on store" : "Product hidden from store"); } };
+      },
+
+      inventory(el) {
+        el.innerHTML = `<div class="grid" style="grid-template-columns:1fr 2fr;gap:16px" id="iRow">
+          <div class="card panel"><h3>Low-stock alert threshold</h3><p class="muted" style="font-size:.9rem">You'll be alerted (dashboard, email, WhatsApp) when any product falls to or below this quantity.</p>
+            <div class="flex"><input class="input" type="number" id="th" value="${A.threshold}" min="1" style="width:110px"><button class="btn btn-primary btn-sm" id="thSave" style="height:44px">Save</button></div>
+            <div class="divider"></div>
+            <div class="sum-row"><span>Total SKUs</span><b>${PRODUCTS.length}</b></div>
+            <div class="sum-row"><span>Total units in stock</span><b>${PRODUCTS.reduce((s, p) => s + p.stock, 0).toLocaleString("en-IN")}</b></div>
+            <div class="sum-row"><span>Low stock</span><b style="color:var(--serious)">${PRODUCTS.filter((p) => p.stock && p.stock <= A.threshold).length}</b></div>
+            <div class="sum-row"><span>Out of stock</span><b style="color:var(--crit)">${PRODUCTS.filter((p) => !p.stock).length}</b></div>
+            <div class="sum-row"><span>Stock value (at price)</span><b>${inr(PRODUCTS.reduce((s, p) => s + p.stock * p.price, 0))}</b></div></div>
+          <div class="card panel"><div class="panel-head"><h3>Stock levels</h3><span class="subtle">Sorted by lowest stock first</span></div>
+            <div class="table-wrap"><table class="tbl"><thead><tr><th>Product</th><th class="num">In stock</th><th>Status</th><th>Restock</th></tr></thead><tbody>
+            ${[...PRODUCTS].sort((a, b) => a.stock - b.stock).map((p) => `<tr><td><div class="flex"><span class="thumb-sm">${plantArt(p.art)}</span><b style="font-size:.88rem">${esc(p.name)}</b></div></td>
+              <td class="num"><b>${p.stock}</b></td><td>${p.stock === 0 ? '<span class="status st-cancelled">Out of stock</span>' : p.stock <= A.threshold ? '<span class="status st-dispatched">Low</span>' : '<span class="status st-delivered">Healthy</span>'}</td>
+              <td><div class="flex" style="gap:6px"><input class="input" type="number" min="1" placeholder="+ qty" style="width:86px;min-height:34px;height:34px" data-rs="${p.id}"><button class="btn btn-outline btn-sm" data-rsb="${p.id}">Add</button></div></td></tr>`).join("")}
+            </tbody></table></div></div></div>`;
+        document.getElementById("thSave").onclick = () => { A.threshold = Math.max(1, +document.getElementById("th").value || 10); save(); toast("Threshold updated"); shell(); };
+        el.onclick = (e) => {
+          const b = e.target.closest("[data-rsb]"); if (!b) return;
+          const n = +el.querySelector(`[data-rs="${b.dataset.rsb}"]`).value; if (!n) return toast("Enter a quantity", "alert");
+          const p = byId(b.dataset.rsb); const was = p.stock; p.stock += n; save();
+          toast(`${p.name}: stock ${was} → ${p.stock}${was === 0 ? " · back-in-stock alerts sent" : ""}`, "box"); shell();
+        };
+      },
+
+      quotes(el) {
+        const paint = () => {
+          el.innerHTML = `<div class="grid grid-2">${A.quotes.map((q) => `<div class="card panel">
+            <div class="flex between"><div><b>${q.id}</b> <span class="tag tag-green">${q.event}</span></div>${{ new: '<span class="status st-new">New request</span>', quoted: '<span class="status st-processing">Quote sent</span>', confirmed: '<span class="status st-delivered">Confirmed</span>' }[q.status]}</div>
+            <h3 style="margin:12px 0 4px">${esc(q.name)}</h3>
+            <div class="grid grid-2" style="gap:8px;font-size:.88rem;margin:10px 0">
+              <div><span class="subtle">Function date</span><br><b>${fmtDate(q.date)}</b></div><div><span class="subtle">Quantity</span><br><b>${q.qty} units</b></div>
+              <div><span class="subtle">Budget</span><br><b>${q.budget}</b></div><div><span class="subtle">Quoted</span><br><b>${q.quote ? inr(q.quote) : "—"}</b></div></div>
+            <p class="muted" style="font-size:.9rem;margin-bottom:12px">${esc(q.items)}</p>
+            <div class="flex wrap" style="gap:8px">
+              ${q.status === "new" ? `<button class="btn btn-primary btn-sm" data-quote="${q.id}">Prepare quote</button>` : ""}
+              ${q.status === "quoted" ? `<button class="btn btn-primary btn-sm" data-confirm="${q.id}">Mark confirmed (advance received)</button>` : ""}
+              <a class="btn btn-outline btn-sm" href="https://wa.me/${STORE.whatsapp}" target="_blank" rel="noopener">${icon("chat", 16)} WhatsApp</a></div></div>`).join("")}</div>`;
+        };
+        paint();
+        el.onclick = (e) => {
+          const qb = e.target.closest("[data-quote]");
+          if (qb) {
+            const q = A.quotes.find((x) => x.id === qb.dataset.quote);
+            const m = openModal(`Prepare quote — ${q.id}`, `<p class="muted">${q.event} · ${q.qty} units · ${fmtDate(q.date)}</p>
+              <div class="form-row"><div class="field"><label>Unit price (₹)</label><input class="input" type="number" id="up" value="${q.qty >= 500 ? 80 : q.qty >= 200 ? 90 : 110}"></div>
+              <div class="field"><label>Bulk discount</label><select class="input" id="disc"><option value="10">10%</option><option value="15" ${q.qty >= 200 ? "selected" : ""}>15%</option><option value="20" ${q.qty >= 500 ? "selected" : ""}>20%</option></select></div></div>
+              <div class="form-row"><div class="field"><label>Decoration / setup charge (₹)</label><input class="input" type="number" id="dec" value="0"></div>
+              <div class="field"><label>Advance required</label><select class="input"><option>30%</option><option>50%</option></select></div></div>
+              <div class="notice green" id="qt"></div>`,
+              `<button class="btn btn-outline" data-close>Cancel</button><button class="btn btn-primary" id="send">Send quote via WhatsApp & email</button>`);
+            const calc = () => { const t = Math.round(q.qty * (+m.querySelector("#up").value) * (1 - m.querySelector("#disc").value / 100) + +m.querySelector("#dec").value); m.querySelector("#qt").innerHTML = `Quote total: <b>${inr(t)}</b>`; return t; };
+            m.oninput = calc; m.onchange = calc; calc();
+            m.querySelector("#send").onclick = () => { q.quote = calc(); q.status = "quoted"; save(); closeModal(); paint(); toast(`Quote ${inr(q.quote)} sent to ${q.name}`, "mail"); };
+          }
+          const cb = e.target.closest("[data-confirm]");
+          if (cb) { const q = A.quotes.find((x) => x.id === cb.dataset.confirm); q.status = "confirmed"; save(); paint(); toast(`${q.id} confirmed · delivery scheduled for ${fmtDate(q.date)}`, "calendar"); }
+        };
+      },
+
+      promotions(el) {
+        const paint = () => {
+          el.innerHTML = `
+          <div class="card panel" style="margin-bottom:16px"><div class="panel-head"><h3>Festival campaigns</h3><button class="btn btn-primary btn-sm" id="newC">${icon("plus", 16)} New campaign</button></div>
+            <div class="table-wrap"><table class="tbl"><thead><tr><th>Campaign</th><th>Dates</th><th>Coupon</th><th class="num">Discount</th><th class="num">Min. order</th><th>Live</th></tr></thead><tbody>
+            ${A.fests.map((f, i) => `<tr><td><div class="flex"><span style="width:36px;height:36px;border-radius:8px;background:linear-gradient(120deg,${f.color[0]},${f.color[1]})"></span><b>${f.name}</b></div></td><td class="subtle">${f.dates}</td><td><code style="font-weight:700;color:#8a5d00">${f.code}</code></td><td class="num">${f.pct}%</td><td class="num">${inr(f.min)}</td>
+              <td><label class="switch"><input type="checkbox" data-f="${i}" ${f.active ? "checked" : ""}><span></span></label></td></tr>`).join("")}</tbody></table></div></div>
+          <div class="grid grid-2">
+            <div class="card panel"><div class="panel-head"><h3>Homepage banners</h3><button class="btn btn-outline btn-sm" id="up">${icon("upload", 16)} Upload banner</button></div>
+              ${A.fests.filter((f) => f.active).map((f) => `<div style="border-radius:12px;padding:18px;color:#fff;background:linear-gradient(120deg,${f.color[0]},${f.color[1]});margin-bottom:10px"><b>${f.name}</b><div style="font-size:.85rem;opacity:.9">${f.desc}</div></div>`).join("") || '<p class="muted">No active campaign banners.</p>'}
+              <p class="subtle" style="margin:0">Recommended size 1920×640 px · JPG/WebP · stored on Cloudinary / S3</p></div>
+            <div class="card panel"><div class="panel-head"><h3>Notify customers</h3></div>
+              <div class="field"><label>Message</label><textarea class="input" id="pushMsg">🪔 Diwali Green Festival is live! 20% off gift packs with code DIWALI20.</textarea></div>
+              <label class="check"><input type="checkbox" checked> App push notification (Firebase)</label><label class="check"><input type="checkbox" checked> Email newsletter</label><label class="check"><input type="checkbox"> WhatsApp broadcast (opted-in customers)</label>
+              <button class="btn btn-primary btn-sm" style="margin-top:12px" id="push">${icon("bell", 16)} Send to 1,248 customers</button></div>
+          </div>`;
+        };
+        paint();
+        el.onchange = (e) => { const t = e.target.closest("[data-f]"); if (t) { A.fests[+t.dataset.f].active = t.checked; save(); paint(); toast(t.checked ? "Campaign is live — banner, pricing and coupon activated" : "Campaign paused"); } };
+        el.onclick = (e) => {
+          if (e.target.closest("#push")) toast("Notification queued for 1,248 customers", "bell");
+          if (e.target.closest("#up")) toast("Banner upload opens the media library in production", "upload");
+          if (e.target.closest("#newC")) {
+            const m = openModal("New festival campaign", `<div class="field"><label>Campaign name</label><input class="input" id="cn" value="Christmas & New Year Sale"></div>
+              <div class="form-row"><div class="field"><label>Start</label><input class="input" type="date" value="2026-12-20"></div><div class="field"><label>End</label><input class="input" type="date" value="2027-01-02"></div></div>
+              <div class="form-row"><div class="field"><label>Coupon code</label><input class="input" id="cc" value="NEWYEAR15" style="text-transform:uppercase"></div><div class="field"><label>Discount %</label><input class="input" type="number" id="cp" value="15"></div></div>
+              <div class="field"><label>Applies to</label><select class="input"><option>Entire store</option><option>Selected categories</option><option>Festival collection only</option></select></div>`,
+              `<button class="btn btn-outline" data-close>Cancel</button><button class="btn btn-primary" id="cs">Schedule campaign</button>`);
+            m.querySelector("#cs").onclick = () => { A.fests.push({ id: "c" + Date.now(), name: m.querySelector("#cn").value, dates: "Dec 20, 2026 – Jan 2, 2027", code: m.querySelector("#cc").value.toUpperCase(), pct: +m.querySelector("#cp").value, min: 499, desc: "Seasonal sale", active: false, color: ["#1a4430", "#2f6fa3"] }); save(); closeModal(); paint(); toast("Campaign scheduled"); };
+          }
+        };
+      },
+
+      blog(el) {
+        const paint = () => {
+          el.innerHTML = `<div class="card panel"><div class="panel-head"><h3>Articles</h3><button class="btn btn-primary btn-sm" id="np">${icon("plus", 16)} New article</button></div>
+            <div class="table-wrap"><table class="tbl"><thead><tr><th>Title</th><th>Category</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody>
+            ${A.posts.map((p) => `<tr><td><b>${esc(p.title)}</b></td><td>${p.cat}</td><td class="subtle">${fmtDate(p.date)}</td><td>${p.status === "Published" ? '<span class="status st-delivered">Published</span>' : '<span class="status st-processing">Draft</span>'}</td>
+              <td>${POSTS.find((x) => x.id === p.id) ? `<a class="btn btn-ghost btn-sm" href="care-tips.html?id=${p.id}" target="_blank">${icon("eye", 16)}</a>` : ""}</td></tr>`).join("")}</tbody></table></div></div>`;
+        };
+        paint();
+        el.onclick = (e) => {
+          if (!e.target.closest("#np")) return;
+          const m = openModal("New article", `<div class="field"><label>Title</label><input class="input" id="t" placeholder="e.g. Winter care for adeniums"></div>
+            <div class="form-row"><div class="field"><label>Category</label><select class="input" id="c"><option>Plant Care</option><option>Flowering</option><option>Seeds</option><option>Saplings</option><option>Festivals</option></select></div><div class="field"><label>Cover image</label><input type="file" class="input" accept="image/*"></div></div>
+            <div class="field"><label>Content</label><textarea class="input" style="min-height:160px" placeholder="Write your article… (rich-text editor in production)"></textarea></div>
+            <div class="field"><label>SEO description</label><input class="input" placeholder="Shown on Google search results"></div>`,
+            `<button class="btn btn-outline" id="draft">Save draft</button><button class="btn btn-primary" id="pub">Publish</button>`);
+          const add = (status) => { const t = m.querySelector("#t").value.trim(); if (!t) return toast("Please add a title", "alert"); A.posts.unshift({ id: Date.now(), title: t, cat: m.querySelector("#c").value, date: new Date().toISOString(), status }); save(); closeModal(); paint(); toast(status === "Published" ? "Article published" : "Draft saved"); };
+          m.querySelector("#pub").onclick = () => add("Published"); m.querySelector("#draft").onclick = () => add("Draft");
+        };
+      },
+
+      customers(el) {
+        el.innerHTML = `<div class="card panel"><div class="panel-head"><h3>Customers <span class="subtle">· 1,248 registered</span></h3><button class="btn btn-outline btn-sm" id="cx">${icon("download", 16)} Export</button></div>
+          <div class="table-wrap"><table class="tbl"><thead><tr><th>Customer</th><th>City</th><th class="num">Orders</th><th class="num">Lifetime value</th><th>Customer since</th><th>Segment</th></tr></thead><tbody>
+          ${ADMIN_CUSTOMERS.map((c) => `<tr><td><div class="flex"><span class="avatar">${c.name[0]}</span><b>${esc(c.name)}</b></div></td><td>${c.city}</td><td class="num">${c.orders}</td><td class="num"><b>${inr(c.spent)}</b></td><td class="subtle">${c.since}</td><td>${c.orders >= 9 ? '<span class="tag tag-gold">Loyal</span>' : c.orders >= 5 ? '<span class="tag tag-green">Repeat</span>' : '<span class="tag tag-gray">Regular</span>'}</td></tr>`).join("")}
+          </tbody></table></div></div>`;
+        document.getElementById("cx").onclick = () => downloadCSV("customers.csv", [["Name", "City", "Orders", "Lifetime value", "Since"], ...ADMIN_CUSTOMERS.map((c) => [c.name, c.city, c.orders, c.spent, c.since])]);
+      },
+
+      reports(el) {
+        const delivered = A.orders.filter((o) => o.status !== "cancelled");
+        const byPay = {}; delivered.forEach((o) => (byPay[o.pay] = (byPay[o.pay] || 0) + o.total));
+        const payMax = Math.max(...Object.values(byPay));
+        const aov = delivered.reduce((s, o) => s + o.total, 0) / delivered.length;
+        el.innerHTML = `
+          <div class="kpis" style="grid-template-columns:repeat(4,1fr)">
+            ${kpi("cash", "6-month revenue", inr(MONTHLY_REVENUE.reduce((s, m) => s + m.v, 0)), "May – Oct 2026", "")}
+            ${kpi("box", "Average order value", inr(aov), "Last 10 orders", "")}
+            ${kpi("refresh", "Repeat customer rate", "38%", "▲ 6 pts vs last quarter", "up")}
+            ${kpi("cart", "Cart → order conversion", "3.4%", "via Google Analytics", "")}
+          </div>
+          <div class="grid grid-2">
+            <div class="card panel"><div class="panel-head"><h3>Monthly revenue</h3><button class="btn btn-outline btn-sm" id="rx">${icon("download", 16)} CSV</button></div><div class="chart" id="rev"></div></div>
+            <div class="card panel"><div class="panel-head"><h3>Revenue by payment mode</h3><span class="subtle">Recent orders</span></div>
+              ${Object.entries(byPay).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<div class="hbar"><span>${k}</span><div class="track2"><i style="width:${(v / payMax) * 100}%"></i></div><b class="num" style="text-align:right">${inr(v)}</b></div>`).join("")}
+              <div class="divider"></div><h3 style="font-size:1rem">Top products</h3>
+              ${[...PRODUCTS].sort((a, b) => b.pop - a.pop).slice(0, 5).map((p, i) => `<div class="sum-row"><span>${i + 1}. ${esc(p.name)}</span><span class="subtle">${p.reviews * 3} sold</span></div>`).join("")}</div>
+          </div>`;
+        revenueChart(document.getElementById("rev"));
+        document.getElementById("rx").onclick = () => downloadCSV("monthly-revenue.csv", [["Month", "Revenue"], ...MONTHLY_REVENUE.map((m) => [m.m + " 2026", m.v])]);
+      },
+
+      settings(el) {
+        el.innerHTML = `<div class="grid grid-2">
+          <div class="card panel"><h3>Store details</h3>
+            <div class="field"><label>Store name</label><input class="input" value="${STORE.name}"></div>
+            <div class="form-row"><div class="field"><label>Phone</label><input class="input" value="${STORE.phone}"></div><div class="field"><label>WhatsApp</label><input class="input" value="+${STORE.whatsapp}"></div></div>
+            <div class="field"><label>Address</label><input class="input" value="${STORE.address}"></div>
+            <div class="form-row"><div class="field"><label>Delivery fee (₹)</label><input class="input" type="number" value="${STORE.deliveryFee}"></div><div class="field"><label>Free delivery above (₹)</label><input class="input" type="number" value="${STORE.freeShippingAbove}"></div></div>
+            <div class="field"><label>Serviceable pin codes</label><textarea class="input">520001–520015, 521101–521230, 522001–522020, 534001–534007</textarea></div>
+            <button class="btn btn-primary btn-sm" onclick="toast('Settings saved')">Save settings</button></div>
+          <div class="card panel"><div class="panel-head"><h3>Staff & roles</h3><button class="btn btn-outline btn-sm" onclick="toast('Invite sent via SMS')">${icon("plus", 16)} Invite staff</button></div>
+            <table class="tbl"><thead><tr><th>User</th><th>Role</th><th>Access</th></tr></thead><tbody>
+              <tr><td><b>Satish Vinti</b><div class="subtle">owner@svnursery.in</div></td><td><span class="tag tag-green">Owner</span></td><td class="subtle">Full access</td></tr>
+              <tr><td><b>Store Staff 1</b><div class="subtle">+91 9xxxx xxxx1</div></td><td><span class="tag tag-gray">Staff</span></td><td class="subtle">Orders, inventory, quotes</td></tr>
+              <tr><td><b>Delivery Staff</b><div class="subtle">+91 9xxxx xxxx2</div></td><td><span class="tag tag-gray">Delivery</span></td><td class="subtle">Assigned orders only</td></tr></tbody></table>
+            <div class="divider"></div>
+            <h3>Payment & integrations</h3>
+            ${[["Razorpay", "UPI, cards, net banking", true], ["Cash on Delivery", "Up to ₹5,000", true], ["MSG91 / Twilio", "OTP & SMS", true], ["WhatsApp Business API", "Order messages", true], ["Firebase Cloud Messaging", "App push", true], ["Google Analytics", "Traffic & conversions", true]].map(([n, d, on]) => `<div class="flex between" style="padding:8px 0;border-bottom:1px solid var(--line)"><div><b style="font-size:.9rem">${n}</b><div class="subtle">${d}</div></div><label class="switch"><input type="checkbox" ${on ? "checked" : ""}><span></span></label></div>`).join("")}
+            <button class="btn btn-outline btn-sm" style="margin-top:16px" id="reset">${icon("refresh", 16)} Reset demo data</button></div></div>`;
+        document.getElementById("reset").onclick = () => { Object.keys(localStorage).filter((k) => k.startsWith("svn_")).forEach((k) => localStorage.removeItem(k)); location.href = "admin.html"; };
+      },
+    };
+
+    /* ---------- Shared admin widgets ---------- */
+    function kpi(ic, lbl, val, delta, cls) {
+      return `<div class="card kpi"><div class="lbl">${icon(ic, 16)} ${lbl}</div><div class="val">${val}</div><div class="delta ${cls}">${delta}</div></div>`;
+    }
+    function catBars() {
+      const data = [["Flowering Plants", 118400], ["Saplings", 72600], ["Seeds", 38900], ["Pots & Soil", 34200], ["Accessories", 22900]];
+      const max = data[0][1];
+      return data.map(([k, v]) => `<div class="hbar"><span>${k}</span><div class="track2" title="${k}: ${inr(v)}"><i style="width:${(v / max) * 100}%"></i></div><b style="text-align:right;font-variant-numeric:tabular-nums">${inr(v)}</b></div>`).join("");
+    }
+    // Single-series bar chart: one hue, rounded data-ends on the baseline, recessive grid, hover tooltip
+    function revenueChart(el) {
+      const W = 640, H = 260, P = { l: 52, r: 12, t: 16, b: 30 };
+      const max = 300000, iw = W - P.l - P.r, ih = H - P.t - P.b;
+      const bw = iw / MONTHLY_REVENUE.length, barW = Math.min(44, bw * 0.55);
+      const y = (v) => P.t + ih - (v / max) * ih;
+      const grid = [0, 100000, 200000, 300000].map((v) => `<line x1="${P.l}" x2="${W - P.r}" y1="${y(v)}" y2="${y(v)}" stroke="#e4e0d5" ${v ? 'stroke-dasharray="3 4"' : ""}/><text x="${P.l - 8}" y="${y(v) + 4}" text-anchor="end">₹${v / 1000}k</text>`).join("");
+      const bars = MONTHLY_REVENUE.map((d, i) => {
+        const x = P.l + i * bw + (bw - barW) / 2, h = (d.v / max) * ih, top = y(d.v), r = 4;
+        return `<g class="col" data-i="${i}"><rect x="${P.l + i * bw}" y="${P.t}" width="${bw}" height="${ih}" fill="transparent"/>
+          <path class="barp" d="M${x} ${P.t + ih}V${top + r}q0 -${r} ${r} -${r}h${barW - 2 * r}q${r} 0 ${r} ${r}V${P.t + ih}Z" fill="${i === MONTHLY_REVENUE.length - 1 ? "var(--forest-700)" : "var(--leaf-500)"}"/>
+          ${i === MONTHLY_REVENUE.length - 1 ? `<text x="${x + barW / 2}" y="${top - 8}" text-anchor="middle" style="fill:var(--ink);font-weight:700">${inr(d.v)}</text>` : ""}
+          <text x="${x + barW / 2}" y="${H - 10}" text-anchor="middle">${d.m}</text></g>`;
+      }).join("");
+      el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Monthly revenue bar chart, May to October 2026">${grid}${bars}</svg><div class="tip"></div>
+        <details style="margin-top:8px"><summary class="subtle" style="cursor:pointer">View as table</summary><table class="tbl" style="margin-top:8px"><tbody>${MONTHLY_REVENUE.map((d) => `<tr><td>${d.m} 2026</td><td class="num">${inr(d.v)}</td></tr>`).join("")}</tbody></table></details>`;
+      const tip = el.querySelector(".tip"), svg = el.querySelector("svg");
+      svg.querySelectorAll(".col").forEach((g) => {
+        g.addEventListener("mousemove", (e) => {
+          const d = MONTHLY_REVENUE[+g.dataset.i], prev = MONTHLY_REVENUE[+g.dataset.i - 1];
+          const rect = el.getBoundingClientRect();
+          tip.innerHTML = `<b>${d.m} 2026</b> · ${inr(d.v)}${prev ? ` · ${d.v >= prev.v ? "▲" : "▼"} ${Math.abs(Math.round(((d.v - prev.v) / prev.v) * 100))}%` : ""}`;
+          tip.style.left = e.clientX - rect.left + "px"; tip.style.top = e.clientY - rect.top + "px"; tip.style.opacity = 1;
+          g.querySelector(".barp").style.filter = "brightness(.85)";
+        });
+        g.addEventListener("mouseleave", () => { tip.style.opacity = 0; g.querySelector(".barp").style.filter = ""; });
+      });
+    }
+    function orderDetail(o) {
+      const lines = o.lines ? o.lines.map((i) => [byId(i.id), i.qty]) : PRODUCTS.slice(o.items % 7, (o.items % 7) + Math.min(3, o.items)).map((p) => [p, 1]);
+      openModal(`Order ${o.id}`, `<div class="flex between" style="margin-bottom:12px">${statusPill(o.status)}<span class="subtle">${o.date}</span></div>
+        <div class="grid grid-2" style="gap:10px;font-size:.9rem"><div><span class="subtle">Customer</span><br><b>${esc(o.customer)}</b><br>${o.phone}</div><div><span class="subtle">Delivery</span><br><b>${o.city}</b><br>${o.deliveryDate ? fmtDate(o.deliveryDate) + " · " + o.slot : "Standard"}</div></div>
+        <div class="divider"></div>${lines.filter((l) => l[0]).map(([p, q]) => `<div class="flex" style="padding:6px 0"><span class="thumb-sm">${plantArt(p.art)}</span><span style="flex:1">${esc(p.name)} × ${q}</span><b>${inr(p.price * q)}</b></div>`).join("")}
+        <div class="sum-row total"><span>Total (${o.pay})</span><span>${inr(o.total)}</span></div>`,
+        `<button class="btn btn-outline" onclick="toast('Invoice PDF generated','download')">${icon("download", 16)} Invoice</button><button class="btn btn-outline" onclick="toast('Packing slip sent to printer','file')">Packing slip</button>`);
+    }
+    function productForm(p, done) {
+      const m = openModal(p ? "Edit product" : "Add product", `<form id="pf">
+        <div class="field"><label>Product name</label><input class="input" name="name" required value="${p ? esc(p.name) : ""}"></div>
+        <div class="form-row"><div class="field"><label>Category</label><select class="input" name="cat">${CATEGORIES.map((c) => `<option value="${c.id}" ${p?.cat === c.id ? "selected" : ""}>${c.name}</option>`).join("")}</select></div>
+          <div class="field"><label>Stock quantity</label><input class="input" type="number" name="stock" min="0" required value="${p ? p.stock : 50}"></div></div>
+        <div class="form-row"><div class="field"><label>Selling price (₹)</label><input class="input" type="number" name="price" min="1" required value="${p ? p.price : ""}"></div>
+          <div class="field"><label>MRP (₹)</label><input class="input" type="number" name="mrp" min="1" required value="${p ? p.mrp : ""}"></div></div>
+        <div class="form-row"><div class="field"><label>Sun requirement</label><select class="input" name="sun">${["Full Sun", "Partial Sun", "Shade", "NA"].map((s) => `<option ${p?.sun === s ? "selected" : ""}>${s}</option>`).join("")}</select></div>
+          <div class="field"><label>Placement</label><select class="input" name="type">${["Outdoor", "Indoor"].map((s) => `<option ${p?.type === s ? "selected" : ""}>${s}</option>`).join("")}</select></div></div>
+        <div class="field"><label>Description</label><textarea class="input" name="desc">${p ? esc(p.desc) : ""}</textarea></div>
+        <div class="field"><label>Product images</label><input type="file" class="input" multiple accept="image/*"><span class="hint">Up to 6 images · auto-compressed & stored on Cloudinary</span></div></form>`,
+        `<button class="btn btn-outline" data-close>Cancel</button><button class="btn btn-primary" id="ps">${p ? "Save changes" : "Add product"}</button>`);
+      m.querySelector("#ps").onclick = () => {
+        const f = m.querySelector("#pf"); if (!f.reportValidity()) return;
+        const d = Object.fromEntries(new FormData(f)); ["stock", "price", "mrp"].forEach((k) => (d[k] = +d[k]));
+        if (d.mrp < d.price) return toast("MRP cannot be lower than selling price", "alert");
+        if (p) Object.assign(p, d);
+        else PRODUCTS.unshift({ id: Math.max(...PRODUCTS.map((x) => x.id)) + 1, ...d, rating: 0, reviews: 0, occasion: ["outdoor"], pot: "Medium", pop: 50, added: new Date().toISOString().slice(0, 10), care: null, tips: [], art: { ...CATEGORIES.find((c) => c.id === d.cat).art } });
+        save(); closeModal(); done(); toast(p ? "Product updated — live on website & app" : "Product added — live on website & app");
+      };
+    }
+    function downloadCSV(name, rows) {
+      const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+      const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = name; a.click();
+      toast(`Downloaded ${name}`, "download");
+    }
+
+    if (qs("embed")) document.querySelector(".proto-ribbon").remove();
+    role() ? shell() : login();
+  </script>
+  <style>@media (max-width:1000px){#dRow,#dRow2,#iRow{grid-template-columns:1fr!important}}</style>
+</body>
+</html>
